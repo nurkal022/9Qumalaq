@@ -45,7 +45,13 @@ class GameState {
     
     getValidMoves(player) {
         const moves = [];
+        const opponent = this.getOpponent(player);
+        
         for (let i = 0; i < 9; i++) {
+            // Пропускаем лунку, если противник объявил её түздық
+            // Түздық противника находится на нашей стороне - мы не можем из неё играть
+            if (this.tuzdyk[opponent] === i) continue;
+            
             if (this.pits[player][i] > 0) moves.push(i);
         }
         return moves;

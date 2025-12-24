@@ -350,7 +350,13 @@ class GameState {
     
     getValidMoves(player) {
         const moves = [];
+        const opponent = this.getOpponent(player);
+        
         for (let i = 0; i < 9; i++) {
+            // Пропускаем лунку, если противник объявил её түздық
+            // Түздық противника находится на нашей стороне - мы не можем из неё играть
+            if (this.tuzdyk[opponent] === i) continue;
+            
             if (this.pits[player][i] > 0) moves.push(i);
         }
         return moves;
@@ -1034,6 +1040,10 @@ class TogyzQumalaq {
         if (player !== this.currentPlayer) return;
         if (this.pits[player][pitIndex] === 0) return;
         
+        // Нельзя играть из лунки, которую противник объявил түздық
+        const opponent = player === 'white' ? 'black' : 'white';
+        if (this.tuzdyk[opponent] === pitIndex) return;
+        
         this.makeMove(pitIndex);
     }
     
@@ -1316,11 +1326,23 @@ class TogyzQumalaq {
     }
     
     updateClickablePits() {
+        const opponent = this.currentPlayer === 'white' ? 'black' : 'white';
+        
         document.querySelectorAll('.pit').forEach(pit => {
             const player = pit.dataset.player;
             const pitIndex = parseInt(pit.dataset.pit);
             
-            if (player === this.currentPlayer && this.pits[player][pitIndex] > 0 && !this.gameOver) {
+            // Лунка кликабельна если:
+            // 1. Это лунка текущего игрока
+            // 2. В ней есть камни
+            // 3. Игра не окончена
+            // 4. Это НЕ лунка түздық противника (противник объявил нашу лунку түздық - мы не можем из неё играть)
+            const isTuzdykOfOpponent = this.tuzdyk[opponent] === pitIndex;
+            
+            if (player === this.currentPlayer && 
+                this.pits[player][pitIndex] > 0 && 
+                !this.gameOver && 
+                !isTuzdykOfOpponent) {
                 pit.classList.add('clickable');
                 pit.classList.remove('disabled');
             } else {
