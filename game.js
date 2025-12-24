@@ -1,44 +1,368 @@
 /**
  * Тоғызқұмалақ - Traditional Kazakh board game
- * Game logic and UI management
+ * Game logic and AI
  */
 
+// ==================== GAME STATE (for AI simulation) ====================
+class GameState {
+    constructor() {
+        this.pits = {
+            white: [9, 9, 9, 9, 9, 9, 9, 9, 9],
+            black: [9, 9, 9, 9, 9, 9, 9, 9, 9]
+        };
+        this.kazan = { white: 0, black: 0 };
+        this.tuzdyk = { white: -1, black: -1 };
+        this.currentPlayer = 'white';
+    }
+    
+    clone() {
+        const state = new GameState();
+        state.pits = {
+            white: [...this.pits.white],
+            black: [...this.pits.black]
+        };
+        state.kazan = { ...this.kazan };
+        state.tuzdyk = { ...this.tuzdyk };
+        state.currentPlayer = this.currentPlayer;
+        return state;
+    }
+    
+    getOpponent(player) {
+        return player === 'white' ? 'black' : 'white';
+    }
+    
+    getValidMoves(player) {
+        const moves = [];
+        for (let i = 0; i < 9; i++) {
+            if (this.pits[player][i] > 0) moves.push(i);
+        }
+        return moves;
+    }
+    
+    canCreateTuzdyk(player, pitIndex) {
+        if (this.tuzdyk[player] !== -1) return false;
+        if (pitIndex === 8) return false;
+        const opponent = this.getOpponent(player);
+        if (this.tuzdyk[opponent] === pitIndex) return false;
+        return true;
+    }
+    
+    // Fast move simulation without animation
+    makeMove(pitIndex) {
+        const player = this.currentPlayer;
+        const opponent = this.getOpponent(player);
+        
+        let stones = this.pits[player][pitIndex];
+        if (stones === 0) return false;
+        
+        this.pits[player][pitIndex] = 0;
+        
+        let currentPit = pitIndex;
+        let currentSide = player;
+        
+        // Special case: 1 stone moves to next pit
+        if (stones === 1) {
+            currentPit++;
+            if (currentPit > 8) {
+                currentPit = 0;
+                currentSide = opponent;
+            }
+            
+            // Check if landing on own tuzdyk
+            if (currentSide === opponent && this.tuzdyk[player] === currentPit) {
+                this.kazan[player]++;
+            } else {
+                this.pits[currentSide][currentPit]++;
+            }
+        } else {
+            // First stone in same pit
+            this.pits[currentSide][currentPit]++;
+            stones--;
+            
+            // Distribute remaining
+            while (stones > 0) {
+                currentPit++;
+                if (currentPit > 8) {
+                    currentPit = 0;
+                    currentSide = currentSide === 'white' ? 'black' : 'white';
+                }
+                
+                // Tuzdyk capture during distribution
+                if (currentSide !== player && this.tuzdyk[player] === currentPit) {
+                    this.kazan[player]++;
+                } else {
+                    this.pits[currentSide][currentPit]++;
+                }
+                stones--;
+            }
+        }
+        
+        // Check captures
+        if (currentSide === opponent && this.tuzdyk[opponent] !== currentPit) {
+            const count = this.pits[opponent][currentPit];
+            
+            // Tuzdyk creation
+            if (count === 3 && this.canCreateTuzdyk(player, currentPit)) {
+                this.tuzdyk[player] = currentPit;
+                this.kazan[player] += count;
+                this.pits[opponent][currentPit] = 0;
+            }
+            // Even capture
+            else if (count % 2 === 0 && count > 0) {
+                this.kazan[player] += count;
+                this.pits[opponent][currentPit] = 0;
+            }
+        }
+        
+        this.currentPlayer = opponent;
+        return true;
+    }
+    
+    isGameOver() {
+        if (this.kazan.white >= 82 || this.kazan.black >= 82) return true;
+        const whiteEmpty = this.pits.white.every(p => p === 0);
+        const blackEmpty = this.pits.black.every(p => p === 0);
+        return whiteEmpty || blackEmpty;
+    }
+    
+    getWinner() {
+        if (this.kazan.white >= 82) return 'white';
+        if (this.kazan.black >= 82) return 'black';
+        if (this.kazan.white > this.kazan.black) return 'white';
+        if (this.kazan.black > this.kazan.white) return 'black';
+        return 'draw';
+    }
+}
+
+// ==================== AI ENGINE ====================
+class TogyzAI {
+    constructor(difficulty = 'hard') {
+        this.difficulty = difficulty;
+        this.maxDepth = difficulty === 'hard' ? 6 : (difficulty === 'medium' ? 4 : 2);
+        this.nodesEvaluated = 0;
+    }
+    
+    // Minimax with Alpha-Beta pruning
+    minimax(state, depth, alpha, beta, maximizingPlayer, aiPlayer) {
+        this.nodesEvaluated++;
+        
+        if (depth === 0 || state.isGameOver()) {
+            return { score: this.evaluate(state, aiPlayer), move: null };
+        }
+        
+        const currentPlayer = state.currentPlayer;
+        const moves = state.getValidMoves(currentPlayer);
+        
+        if (moves.length === 0) {
+            return { score: this.evaluate(state, aiPlayer), move: null };
+        }
+        
+        // Move ordering - prioritize captures and tuzdyk
+        const orderedMoves = this.orderMoves(state, moves, currentPlayer);
+        
+        let bestMove = orderedMoves[0];
+        
+        if (maximizingPlayer) {
+            let maxScore = -Infinity;
+            
+            for (const move of orderedMoves) {
+                const newState = state.clone();
+                newState.makeMove(move);
+                
+                const result = this.minimax(newState, depth - 1, alpha, beta, false, aiPlayer);
+                
+                if (result.score > maxScore) {
+                    maxScore = result.score;
+                    bestMove = move;
+                }
+                
+                alpha = Math.max(alpha, result.score);
+                if (beta <= alpha) break; // Alpha-Beta cutoff
+            }
+            
+            return { score: maxScore, move: bestMove };
+        } else {
+            let minScore = Infinity;
+            
+            for (const move of orderedMoves) {
+                const newState = state.clone();
+                newState.makeMove(move);
+                
+                const result = this.minimax(newState, depth - 1, alpha, beta, true, aiPlayer);
+                
+                if (result.score < minScore) {
+                    minScore = result.score;
+                    bestMove = move;
+                }
+                
+                beta = Math.min(beta, result.score);
+                if (beta <= alpha) break;
+            }
+            
+            return { score: minScore, move: bestMove };
+        }
+    }
+    
+    // Move ordering for better pruning
+    orderMoves(state, moves, player) {
+        const opponent = state.getOpponent(player);
+        const scored = moves.map(move => {
+            let priority = 0;
+            const stones = state.pits[player][move];
+            
+            // Simulate to find landing position
+            let pos = move;
+            let side = player;
+            let remaining = stones;
+            
+            if (stones === 1) {
+                pos++;
+                if (pos > 8) { pos = 0; side = opponent; }
+            } else {
+                remaining--;
+                while (remaining > 0) {
+                    pos++;
+                    if (pos > 8) { pos = 0; side = side === 'white' ? 'black' : 'white'; }
+                    if (side !== player && state.tuzdyk[player] === pos) {
+                        priority += 2;
+                    }
+                    remaining--;
+                }
+            }
+            
+            // Check capture potential
+            if (side === opponent) {
+                const targetStones = state.pits[opponent][pos] + 1;
+                if (targetStones === 3 && state.canCreateTuzdyk(player, pos)) {
+                    priority += 50; // Tuzdyk is very valuable
+                } else if (targetStones % 2 === 0) {
+                    priority += targetStones * 2;
+                }
+            }
+            
+            return { move, priority };
+        });
+        
+        scored.sort((a, b) => b.priority - a.priority);
+        return scored.map(s => s.move);
+    }
+    
+    // Position evaluation
+    evaluate(state, aiPlayer) {
+        const opponent = state.getOpponent(aiPlayer);
+        let score = 0;
+        
+        // 1. Kazan difference (most important)
+        score += (state.kazan[aiPlayer] - state.kazan[opponent]) * 10;
+        
+        // 2. Win/Loss check
+        if (state.kazan[aiPlayer] >= 82) return 10000;
+        if (state.kazan[opponent] >= 82) return -10000;
+        
+        // 3. Tuzdyk value (very important!)
+        if (state.tuzdyk[aiPlayer] !== -1) {
+            // Value based on position - center tuzdyks are better
+            const tuzdykPos = state.tuzdyk[aiPlayer];
+            const tuzdykValue = 25 + (4 - Math.abs(4 - tuzdykPos)) * 3;
+            score += tuzdykValue;
+        }
+        if (state.tuzdyk[opponent] !== -1) {
+            const tuzdykPos = state.tuzdyk[opponent];
+            const tuzdykValue = 25 + (4 - Math.abs(4 - tuzdykPos)) * 3;
+            score -= tuzdykValue;
+        }
+        
+        // 4. Potential tuzdyk (if can create one)
+        if (state.tuzdyk[aiPlayer] === -1) {
+            for (let i = 0; i < 8; i++) {
+                if (state.pits[opponent][i] === 2 && state.canCreateTuzdyk(aiPlayer, i)) {
+                    score += 8; // Close to creating tuzdyk
+                }
+            }
+        }
+        
+        // 5. Stone distribution and control
+        for (let i = 0; i < 9; i++) {
+            const myStones = state.pits[aiPlayer][i];
+            const oppStones = state.pits[opponent][i];
+            
+            // Center pits (4,5,6 - indices 3,4,5) are slightly more valuable
+            const centerBonus = (i >= 3 && i <= 5) ? 1.2 : 1.0;
+            
+            score += myStones * 0.3 * centerBonus;
+            score -= oppStones * 0.3 * centerBonus;
+            
+            // Potential captures
+            if (oppStones > 0 && oppStones % 2 === 1) {
+                // Odd stones - one more makes even (capturable)
+                score += 0.5;
+            }
+        }
+        
+        // 6. Mobility (having moves is good)
+        const myMoves = state.getValidMoves(aiPlayer).length;
+        const oppMoves = state.getValidMoves(opponent).length;
+        score += (myMoves - oppMoves) * 1.5;
+        
+        // 7. Endgame considerations
+        const totalOnBoard = state.pits.white.reduce((a, b) => a + b, 0) + 
+                            state.pits.black.reduce((a, b) => a + b, 0);
+        
+        if (totalOnBoard < 50) {
+            // In endgame, kazan lead is more important
+            score += (state.kazan[aiPlayer] - state.kazan[opponent]) * 5;
+        }
+        
+        return score;
+    }
+    
+    getBestMove(state, player) {
+        this.nodesEvaluated = 0;
+        const isMaximizing = state.currentPlayer === player;
+        
+        const result = this.minimax(
+            state.clone(),
+            this.maxDepth,
+            -Infinity,
+            Infinity,
+            isMaximizing,
+            player
+        );
+        
+        console.log(`AI evaluated ${this.nodesEvaluated} nodes, best move: ${result.move + 1}, score: ${result.score.toFixed(1)}`);
+        return result.move;
+    }
+}
+
+// ==================== MAIN GAME CLASS ====================
 class TogyzQumalaq {
     constructor() {
-        // Game state
-        this.pits = {
-            white: [9, 9, 9, 9, 9, 9, 9, 9, 9], // Player 1 (bottom)
-            black: [9, 9, 9, 9, 9, 9, 9, 9, 9]  // Player 2 (top)
-        };
-        this.kazan = {
-            white: 0,
-            black: 0
-        };
-        this.tuzdyk = {
-            white: -1, // Index of opponent's pit that is white's tuzdyk
-            black: -1  // Index of opponent's pit that is black's tuzdyk
-        };
-        this.currentPlayer = 'white'; // White starts first
+        this.state = new GameState();
         this.gameOver = false;
         this.isAnimating = false;
-        this.gameMode = 'pvp'; // 'pvp' or 'bot'
+        this.gameMode = 'pvp';
         this.lastMove = null;
+        this.animationDelay = 60;
         
-        // Animation settings
-        this.animationDelay = 80; // ms per stone
+        // AI
+        this.ai = new TogyzAI('hard');
         
-        // Initialize UI
         this.initUI();
         this.renderBoard();
     }
     
+    // Getters for compatibility
+    get pits() { return this.state.pits; }
+    get kazan() { return this.state.kazan; }
+    get tuzdyk() { return this.state.tuzdyk; }
+    get currentPlayer() { return this.state.currentPlayer; }
+    set currentPlayer(val) { this.state.currentPlayer = val; }
+    
     initUI() {
-        // Pit click handlers
         document.querySelectorAll('.pit').forEach(pit => {
             pit.addEventListener('click', () => this.handlePitClick(pit));
         });
         
-        // Control buttons
         document.getElementById('newGameBtn').addEventListener('click', () => this.newGame());
         document.getElementById('modeToggleBtn').addEventListener('click', () => this.toggleMode());
         document.getElementById('playAgainBtn').addEventListener('click', () => {
@@ -53,13 +377,9 @@ class TogyzQumalaq {
         const player = pitElement.dataset.player;
         const pitIndex = parseInt(pitElement.dataset.pit);
         
-        // Can only click own pits on your turn
         if (player !== this.currentPlayer) return;
-        
-        // Can't click empty pits
         if (this.pits[player][pitIndex] === 0) return;
         
-        // Execute move
         this.makeMove(pitIndex);
     }
     
@@ -67,18 +387,16 @@ class TogyzQumalaq {
         const player = this.currentPlayer;
         const opponent = player === 'white' ? 'black' : 'white';
         
-        // Get stones from selected pit
         let stones = this.pits[player][pitIndex];
         if (stones === 0) return;
         
         this.isAnimating = true;
         this.lastMove = { player, pit: pitIndex + 1, stones };
         
-        // Special case: only 1 stone - move to next pit
+        // Animation logic
         if (stones === 1) {
             this.pits[player][pitIndex] = 0;
             
-            // Next position
             let nextPit = pitIndex + 1;
             let nextSide = player;
             
@@ -87,58 +405,48 @@ class TogyzQumalaq {
                 nextSide = opponent;
             }
             
-            // Animate
-            await this.animateStoneMove(player, pitIndex, nextSide, nextPit);
+            await this.delay(this.animationDelay);
             
-            // Add stone
-            this.pits[nextSide][nextPit]++;
-            this.renderBoard();
-            
-            // Check tuzdyk capture
             if (nextSide === opponent && this.tuzdyk[player] === nextPit) {
-                await this.delay(200);
-                await this.captureToKazan(player, opponent, nextPit);
+                this.kazan[player]++;
+                this.renderKazan(player, true);
+            } else {
+                this.pits[nextSide][nextPit]++;
+                this.renderBoard();
             }
-            // Check normal capture or tuzdyk creation
-            else if (nextSide === opponent) {
+            
+            // Check capture
+            if (nextSide === opponent && this.tuzdyk[player] !== nextPit) {
                 const count = this.pits[opponent][nextPit];
                 
-                // Tuzdyk creation: exactly 3 stones
-                if (count === 3 && this.canCreateTuzdyk(player, nextPit)) {
+                if (count === 3 && this.state.canCreateTuzdyk(player, nextPit)) {
                     await this.delay(200);
                     this.tuzdyk[player] = nextPit;
                     await this.captureToKazan(player, opponent, nextPit);
-                }
-                // Normal capture: even number
-                else if (count % 2 === 0) {
+                } else if (count % 2 === 0 && count > 0) {
                     await this.delay(200);
                     await this.captureToKazan(player, opponent, nextPit);
                 }
             }
         } else {
-            // Normal move: distribute all stones
             this.pits[player][pitIndex] = 0;
             this.renderBoard();
             
             let currentPit = pitIndex;
             let currentSide = player;
             
-            // First stone goes into the same pit
             await this.delay(this.animationDelay);
             this.pits[currentSide][currentPit]++;
             this.renderPit(currentSide, currentPit, true);
             stones--;
             
-            // Distribute remaining stones
             while (stones > 0) {
-                // Move to next pit
                 currentPit++;
                 if (currentPit > 8) {
                     currentPit = 0;
                     currentSide = currentSide === 'white' ? 'black' : 'white';
                 }
                 
-                // Skip tuzdyk of current moving player (stones go to kazan)
                 if (currentSide !== player && this.tuzdyk[player] === currentPit) {
                     await this.delay(this.animationDelay);
                     this.kazan[player]++;
@@ -153,73 +461,46 @@ class TogyzQumalaq {
                 stones--;
             }
             
-            // Last stone position
             const lastPit = currentPit;
             const lastSide = currentSide;
             
-            // Check captures if last stone landed on opponent's side
-            if (lastSide === opponent) {
+            if (lastSide === opponent && this.tuzdyk[opponent] !== lastPit) {
                 const count = this.pits[opponent][lastPit];
                 
-                // Check if this pit is already opponent's tuzdyk (shouldn't happen but safety check)
-                if (this.tuzdyk[opponent] === lastPit) {
-                    // Do nothing, stones already captured during distribution
-                }
-                // Tuzdyk creation: exactly 3 stones
-                else if (count === 3 && this.canCreateTuzdyk(player, lastPit)) {
+                if (count === 3 && this.state.canCreateTuzdyk(player, lastPit)) {
                     await this.delay(200);
                     this.tuzdyk[player] = lastPit;
                     await this.captureToKazan(player, opponent, lastPit);
-                }
-                // Normal capture: even number
-                else if (count % 2 === 0) {
+                } else if (count % 2 === 0 && count > 0) {
                     await this.delay(200);
                     await this.captureToKazan(player, opponent, lastPit);
                 }
             }
         }
         
-        // Update display
         this.updateLastMove();
         this.isAnimating = false;
         
-        // Check win condition
         if (this.checkWin()) {
             this.endGame();
             return;
         }
         
-        // Switch turn
-        this.currentPlayer = opponent;
+        this.state.currentPlayer = opponent;
         this.updateTurnIndicator();
         this.updateClickablePits();
         
-        // Bot move
+        // AI move
         if (this.gameMode === 'bot' && this.currentPlayer === 'black' && !this.gameOver) {
-            await this.delay(500);
+            await this.delay(300);
             this.makeBotMove();
         }
-    }
-    
-    canCreateTuzdyk(player, opponentPitIndex) {
-        // Rule 1: Can only have one tuzdyk
-        if (this.tuzdyk[player] !== -1) return false;
-        
-        // Rule 2: Cannot create tuzdyk on pit 9 (index 8)
-        if (opponentPitIndex === 8) return false;
-        
-        // Rule 3: Cannot create tuzdyk on symmetric position if opponent has tuzdyk
-        const opponent = player === 'white' ? 'black' : 'white';
-        if (this.tuzdyk[opponent] === opponentPitIndex) return false;
-        
-        return true;
     }
     
     async captureToKazan(player, opponent, pitIndex) {
         const stones = this.pits[opponent][pitIndex];
         if (stones === 0) return;
         
-        // Animate capture
         const pitEl = document.querySelector(`.pit[data-player="${opponent}"][data-pit="${pitIndex}"]`);
         pitEl.querySelectorAll('.stone').forEach(stone => {
             stone.classList.add('captured');
@@ -234,21 +515,14 @@ class TogyzQumalaq {
         this.renderKazan(player, true);
     }
     
-    async animateStoneMove(fromSide, fromPit, toSide, toPit) {
-        await this.delay(this.animationDelay);
-    }
-    
     checkWin() {
-        // Win condition: 82 or more stones in kazan
         if (this.kazan.white >= 82) return 'white';
         if (this.kazan.black >= 82) return 'black';
         
-        // Check if one player has no valid moves (all pits empty)
         const whiteEmpty = this.pits.white.every(p => p === 0);
         const blackEmpty = this.pits.black.every(p => p === 0);
         
         if (whiteEmpty || blackEmpty) {
-            // Game ends - count total
             if (this.kazan.white > this.kazan.black) return 'white';
             if (this.kazan.black > this.kazan.white) return 'black';
             return 'draw';
@@ -278,95 +552,19 @@ class TogyzQumalaq {
         modal.classList.add('show');
     }
     
-    // Bot AI
+    // AI Move
     async makeBotMove() {
         if (this.gameOver || this.isAnimating) return;
         
-        const validMoves = this.getValidMoves('black');
+        const validMoves = this.state.getValidMoves('black');
         if (validMoves.length === 0) return;
         
-        // Simple AI: evaluate each move
-        let bestMove = validMoves[0];
-        let bestScore = -Infinity;
+        // Use AI to get best move
+        const bestMove = this.ai.getBestMove(this.state, 'black');
         
-        for (const pitIndex of validMoves) {
-            const score = this.evaluateMove('black', pitIndex);
-            if (score > bestScore) {
-                bestScore = score;
-                bestMove = pitIndex;
-            }
+        if (bestMove !== null) {
+            await this.makeMove(bestMove);
         }
-        
-        await this.makeMove(bestMove);
-    }
-    
-    getValidMoves(player) {
-        const moves = [];
-        for (let i = 0; i < 9; i++) {
-            if (this.pits[player][i] > 0) {
-                moves.push(i);
-            }
-        }
-        return moves;
-    }
-    
-    evaluateMove(player, pitIndex) {
-        // Clone state
-        const originalPits = JSON.parse(JSON.stringify(this.pits));
-        const originalKazan = { ...this.kazan };
-        const originalTuzdyk = { ...this.tuzdyk };
-        
-        const opponent = player === 'white' ? 'black' : 'white';
-        let score = 0;
-        
-        // Simulate move
-        let stones = this.pits[player][pitIndex];
-        this.pits[player][pitIndex] = 0;
-        
-        let currentPit = pitIndex;
-        let currentSide = player;
-        
-        // First stone in same pit
-        this.pits[currentSide][currentPit]++;
-        stones--;
-        
-        // Distribute
-        while (stones > 0) {
-            currentPit++;
-            if (currentPit > 8) {
-                currentPit = 0;
-                currentSide = currentSide === 'white' ? 'black' : 'white';
-            }
-            
-            if (currentSide !== player && this.tuzdyk[player] === currentPit) {
-                this.kazan[player]++;
-                score += 2; // Bonus for tuzdyk capture
-            } else {
-                this.pits[currentSide][currentPit]++;
-            }
-            stones--;
-        }
-        
-        // Check capture potential
-        if (currentSide === opponent) {
-            const count = this.pits[opponent][currentPit];
-            
-            if (count === 3 && this.canCreateTuzdyk(player, currentPit)) {
-                score += 15 + count; // Tuzdyk is very valuable
-            } else if (count % 2 === 0) {
-                score += count; // Capture value
-            }
-        }
-        
-        // Restore state
-        this.pits = originalPits;
-        this.kazan = originalKazan;
-        this.tuzdyk = originalTuzdyk;
-        
-        // Add some randomness for variety
-        score += Math.random() * 2;
-        
-        return score;
     }
     
     // UI Methods
@@ -389,10 +587,8 @@ class TogyzQumalaq {
         const countEl = pit.querySelector('.stone-count');
         const stoneCount = this.pits[player][pitIndex];
         
-        // Clear container
         container.innerHTML = '';
         
-        // Max 10 stones per layer (2 columns × 5 rows)
         const stonesPerLayer = 10;
         const numLayers = Math.ceil(stoneCount / stonesPerLayer) || 1;
         
@@ -414,10 +610,8 @@ class TogyzQumalaq {
             stonesRemaining -= stonesInThisLayer;
         }
         
-        // Update count
         countEl.textContent = stoneCount;
         
-        // Update tuzdyk visual
         const opponent = player === 'white' ? 'black' : 'white';
         if (this.tuzdyk[opponent] === pitIndex) {
             pit.classList.add('tuzdyk');
@@ -425,7 +619,6 @@ class TogyzQumalaq {
             pit.classList.remove('tuzdyk');
         }
         
-        // Highlight animation
         if (animate) {
             pit.classList.add('last-move');
             setTimeout(() => pit.classList.remove('last-move'), 600);
@@ -438,7 +631,6 @@ class TogyzQumalaq {
         const countEl = kazan.querySelector('.kazan-count');
         const stoneCount = this.kazan[player];
         
-        // Only show limited visual stones (for performance)
         stonesContainer.innerHTML = '';
         const visualStones = Math.min(stoneCount, 40);
         for (let i = 0; i < visualStones; i++) {
@@ -508,13 +700,7 @@ class TogyzQumalaq {
     }
     
     newGame() {
-        this.pits = {
-            white: [9, 9, 9, 9, 9, 9, 9, 9, 9],
-            black: [9, 9, 9, 9, 9, 9, 9, 9, 9]
-        };
-        this.kazan = { white: 0, black: 0 };
-        this.tuzdyk = { white: -1, black: -1 };
-        this.currentPlayer = 'white';
+        this.state = new GameState();
         this.gameOver = false;
         this.isAnimating = false;
         this.lastMove = null;
@@ -536,4 +722,3 @@ class TogyzQumalaq {
 document.addEventListener('DOMContentLoaded', () => {
     window.game = new TogyzQumalaq();
 });
-
