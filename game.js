@@ -787,19 +787,35 @@ const AI_LEVELS = {
 
 // ==================== MAIN GAME CLASS ====================
 class TogyzQumalaq {
-    constructor() {
+    constructor(mode = 'pvp', difficulty = 'hard') {
         this.state = new GameState();
         this.gameOver = false;
         this.isAnimating = false;
-        this.gameMode = 'pvp';
-        this.aiLevel = 'hard';
+        this.gameMode = mode;
+        this.aiLevel = difficulty;
         this.lastMove = null;
         this.animationDelay = 60;
         
         this.ai = this.createAI(this.aiLevel);
         
         this.initUI();
+        this.updateModeButton();
+        this.updateDifficultyButton();
         this.newGame();  // Initialize with a new game (hides modal, starts logging)
+    }
+    
+    updateModeButton() {
+        const btn = document.getElementById('modeToggleBtn');
+        if (btn) {
+            btn.textContent = this.gameMode === 'pvp' ? 'Режим: 1 vs 1' : 'Режим: vs Бот';
+        }
+    }
+    
+    updateDifficultyButton() {
+        const btn = document.getElementById('difficultyBtn');
+        if (btn) {
+            btn.textContent = `AI: ${AI_LEVELS[this.aiLevel].name}`;
+        }
     }
     
     createAI(level) {
@@ -826,6 +842,7 @@ class TogyzQumalaq {
         
         document.getElementById('newGameBtn').addEventListener('click', () => this.newGame());
         document.getElementById('modeToggleBtn').addEventListener('click', () => this.toggleMode());
+        document.getElementById('menuBtn').addEventListener('click', () => this.backToMenu());
         document.getElementById('playAgainBtn').addEventListener('click', () => {
             document.getElementById('winModal').classList.remove('show');
             this.newGame();
@@ -1215,9 +1232,21 @@ class TogyzQumalaq {
     
     toggleMode() {
         this.gameMode = this.gameMode === 'pvp' ? 'bot' : 'pvp';
-        const btn = document.getElementById('modeToggleBtn');
-        btn.textContent = this.gameMode === 'pvp' ? 'Режим: 1 vs 1' : 'Режим: vs Бот';
+        this.updateModeButton();
         this.newGame();
+    }
+    
+    backToMenu() {
+        // Cancel any running AI
+        if (this.ai && this.ai.cancel) {
+            this.ai.cancel();
+        }
+        
+        // Hide game container
+        document.getElementById('gameContainer').style.display = 'none';
+        
+        // Show start screen
+        document.getElementById('startScreen').classList.remove('hidden');
     }
     
     newGame() {
@@ -1247,6 +1276,67 @@ class TogyzQumalaq {
     }
 }
 
+// ==================== START SCREEN ====================
+class StartScreen {
+    constructor() {
+        this.selectedMode = 'pvp';
+        this.selectedDifficulty = 'hard';
+        this.initUI();
+    }
+    
+    initUI() {
+        // Mode buttons
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => this.selectMode(btn.dataset.mode));
+        });
+        
+        // Difficulty buttons
+        document.querySelectorAll('.diff-btn').forEach(btn => {
+            btn.addEventListener('click', () => this.selectDifficulty(btn.dataset.level));
+        });
+        
+        // Start game button
+        document.getElementById('startGameBtn').addEventListener('click', () => this.startGame());
+    }
+    
+    selectMode(mode) {
+        this.selectedMode = mode;
+        
+        // Update button states
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mode === mode);
+        });
+        
+        // Show/hide difficulty section
+        const diffSection = document.getElementById('difficultySection');
+        if (mode === 'bot') {
+            diffSection.style.display = 'block';
+        } else {
+            diffSection.style.display = 'none';
+        }
+    }
+    
+    selectDifficulty(level) {
+        this.selectedDifficulty = level;
+        
+        // Update button states
+        document.querySelectorAll('.diff-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.level === level);
+        });
+    }
+    
+    startGame() {
+        // Hide start screen
+        document.getElementById('startScreen').classList.add('hidden');
+        
+        // Show game container
+        document.getElementById('gameContainer').style.display = 'block';
+        
+        // Initialize game with selected settings
+        window.game = new TogyzQumalaq(this.selectedMode, this.selectedDifficulty);
+    }
+}
+
 // ==================== CONSOLE COMMANDS ====================
 // Expose logger functions for console use
 window.togyzLogger = {
@@ -1259,7 +1349,7 @@ window.togyzLogger = {
 console.log('%c🎮 Тоғызқұмалақ Training Logger', 'font-size: 16px; font-weight: bold;');
 console.log('Commands: togyzLogger.export(), togyzLogger.stats(), togyzLogger.clear(), togyzLogger.games');
 
-// Initialize game
+// Initialize start screen
 document.addEventListener('DOMContentLoaded', () => {
-    window.game = new TogyzQumalaq();
+    window.startScreen = new StartScreen();
 });
