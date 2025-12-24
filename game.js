@@ -1,7 +1,185 @@
 /**
  * Тоғызқұмалақ - Traditional Kazakh board game
- * Game logic and AI (Minimax + MCTS)
+ * Game logic and AI (Minimax + MCTS + Parallel MCTS)
  */
+
+// ==================== GAME LOGGER (for training data) ====================
+class GameLogger {
+    constructor() {
+        this.games = [];
+        this.currentGame = null;
+    }
+    
+    startGame(mode, aiLevel = null) {
+        this.currentGame = {
+            id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+            timestamp: new Date().toISOString(),
+            mode: mode,
+            aiLevel: aiLevel,
+            moves: [],
+            states: [],
+            aiEvaluations: [],
+            result: null
+        };
+        
+        // Log initial state
+        this.logState(null);
+        
+        console.log(`[GameLogger] Game started: ${this.currentGame.id}`);
+    }
+    
+    logMove(player, pitIndex, stones, stateAfter) {
+        if (!this.currentGame) return;
+        
+        const moveData = {
+            moveNumber: this.currentGame.moves.length + 1,
+            timestamp: Date.now(),
+            player,
+            pit: pitIndex + 1,
+            stones,
+            stateAfter: this.serializeState(stateAfter)
+        };
+        
+        this.currentGame.moves.push(moveData);
+        console.log(`[GameLogger] Move ${moveData.moveNumber}: ${player} pit ${pitIndex + 1} (${stones} stones)`);
+    }
+    
+    logState(state) {
+        if (!this.currentGame) return;
+        
+        this.currentGame.states.push(state ? this.serializeState(state) : 'initial');
+    }
+    
+    logAIEvaluation(aiType, data) {
+        if (!this.currentGame) return;
+        
+        const evalData = {
+            moveNumber: this.currentGame.moves.length + 1,
+            timestamp: Date.now(),
+            aiType,
+            ...data
+        };
+        
+        this.currentGame.aiEvaluations.push(evalData);
+        console.log(`[GameLogger] AI Eval (${aiType}):`, data);
+    }
+    
+    endGame(winner, finalScore) {
+        if (!this.currentGame) return;
+        
+        this.currentGame.result = {
+            winner,
+            finalScore: { ...finalScore },
+            totalMoves: this.currentGame.moves.length,
+            duration: Date.now() - new Date(this.currentGame.timestamp).getTime()
+        };
+        
+        this.games.push(this.currentGame);
+        
+        console.log(`[GameLogger] Game ended: ${winner} wins (${finalScore.white}-${finalScore.black})`);
+        console.log(`[GameLogger] Total games logged: ${this.games.length}`);
+        
+        // Auto-save every 5 games
+        if (this.games.length % 5 === 0) {
+            this.saveToLocalStorage();
+        }
+        
+        // Update UI counter
+        const el = document.getElementById('gamesLogged');
+        if (el) {
+            el.textContent = `${this.games.length} games`;
+        }
+        
+        this.currentGame = null;
+    }
+    
+    serializeState(state) {
+        return {
+            pits: {
+                white: [...state.pits.white],
+                black: [...state.pits.black]
+            },
+            kazan: { ...state.kazan },
+            tuzdyk: { ...state.tuzdyk },
+            currentPlayer: state.currentPlayer
+        };
+    }
+    
+    saveToLocalStorage() {
+        try {
+            const data = JSON.stringify(this.games);
+            localStorage.setItem('togyz_game_logs', data);
+            console.log(`[GameLogger] Saved ${this.games.length} games to localStorage`);
+        } catch (e) {
+            console.warn('[GameLogger] Failed to save to localStorage:', e);
+        }
+    }
+    
+    loadFromLocalStorage() {
+        try {
+            const data = localStorage.getItem('togyz_game_logs');
+            if (data) {
+                this.games = JSON.parse(data);
+                console.log(`[GameLogger] Loaded ${this.games.length} games from localStorage`);
+            }
+        } catch (e) {
+            console.warn('[GameLogger] Failed to load from localStorage:', e);
+        }
+    }
+    
+    exportToJSON() {
+        const blob = new Blob([JSON.stringify(this.games, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `togyz_training_data_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        console.log(`[GameLogger] Exported ${this.games.length} games`);
+    }
+    
+    getStats() {
+        const stats = {
+            totalGames: this.games.length,
+            whiteWins: 0,
+            blackWins: 0,
+            draws: 0,
+            avgMoves: 0,
+            avgDuration: 0
+        };
+        
+        let totalMoves = 0;
+        let totalDuration = 0;
+        
+        for (const game of this.games) {
+            if (game.result) {
+                if (game.result.winner === 'white') stats.whiteWins++;
+                else if (game.result.winner === 'black') stats.blackWins++;
+                else stats.draws++;
+                
+                totalMoves += game.result.totalMoves;
+                totalDuration += game.result.duration;
+            }
+        }
+        
+        if (this.games.length > 0) {
+            stats.avgMoves = Math.round(totalMoves / this.games.length);
+            stats.avgDuration = Math.round(totalDuration / this.games.length / 1000);
+        }
+        
+        return stats;
+    }
+    
+    clearLogs() {
+        this.games = [];
+        localStorage.removeItem('togyz_game_logs');
+        console.log('[GameLogger] Logs cleared');
+    }
+}
+
+// Global logger instance
+const gameLogger = new GameLogger();
+gameLogger.loadFromLocalStorage();
 
 // ==================== GAME STATE ====================
 class GameState {
@@ -25,6 +203,18 @@ class GameState {
         state.tuzdyk = { ...this.tuzdyk };
         state.currentPlayer = this.currentPlayer;
         return state;
+    }
+    
+    toData() {
+        return {
+            pits: {
+                white: [...this.pits.white],
+                black: [...this.pits.black]
+            },
+            kazan: { ...this.kazan },
+            tuzdyk: { ...this.tuzdyk },
+            currentPlayer: this.currentPlayer
+        };
     }
     
     getOpponent(player) {
@@ -124,7 +314,6 @@ class GameState {
         return 'draw';
     }
     
-    // Quick evaluation for MCTS playout policy
     quickEvaluate(player) {
         const opp = this.getOpponent(player);
         return (this.kazan[player] - this.kazan[opp]) + 
@@ -153,7 +342,6 @@ class MCTSNode {
         return this.children.length > 0;
     }
     
-    // UCT formula for child selection
     getUCTValue(explorationWeight) {
         if (this.visits === 0) return Infinity;
         return (this.wins / this.visits) + 
@@ -216,7 +404,6 @@ class MCTSAI {
         this.simulationsRun = 0;
     }
     
-    // Smart playout - mix of random and greedy
     simulate(state, aiPlayer) {
         const simState = state.clone();
         let moveCount = 0;
@@ -228,9 +415,7 @@ class MCTSAI {
             
             let selectedMove;
             
-            // 70% greedy, 30% random for better playouts
             if (Math.random() < 0.7) {
-                // Greedy: pick move with best immediate capture
                 let bestScore = -Infinity;
                 selectedMove = moves[0];
                 
@@ -267,20 +452,16 @@ class MCTSAI {
             
             let node = root;
             
-            // 1. Selection - traverse to leaf
             while (node.isFullyExpanded() && node.hasChildren()) {
                 node = node.selectChild(this.C);
             }
             
-            // 2. Expansion - add new node
             if (!node.state.isGameOver() && !node.isFullyExpanded()) {
                 node = node.expand();
             }
             
-            // 3. Simulation - playout to end
             const winner = this.simulate(node.state, aiPlayer);
             
-            // 4. Backpropagation - update stats
             while (node !== null) {
                 node.update(winner, aiPlayer);
                 node = node.parent;
@@ -296,14 +477,95 @@ class MCTSAI {
         const root = this.search(state, player);
         const bestMove = root.getBestMove();
         
-        // Log stats
         const bestChild = root.children.find(c => c.move === bestMove);
+        let winRate = 0;
+        let moveStats = [];
+        
         if (bestChild) {
-            const winRate = (bestChild.wins / bestChild.visits * 100).toFixed(1);
-            console.log(`MCTS: ${this.simulationsRun} simulations, move: ${bestMove + 1}, win rate: ${winRate}%`);
+            winRate = bestChild.wins / bestChild.visits;
+            moveStats = root.children.map(c => ({
+                move: c.move + 1,
+                visits: c.visits,
+                winRate: (c.wins / c.visits * 100).toFixed(1) + '%'
+            }));
         }
         
+        console.log(`MCTS: ${this.simulationsRun} simulations, move: ${bestMove + 1}, win rate: ${(winRate * 100).toFixed(1)}%`);
+        
+        // Log for training
+        gameLogger.logAIEvaluation('mcts', {
+            simulations: this.simulationsRun,
+            bestMove: bestMove + 1,
+            winRate: winRate,
+            moveStats
+        });
+        
         return bestMove;
+    }
+}
+
+// ==================== PARALLEL MCTS AI (Web Worker) ====================
+class ParallelMCTSAI {
+    constructor(simulations = 100000, timeLimit = 30000) {
+        this.simulations = simulations;
+        this.timeLimit = timeLimit;
+        this.worker = null;
+        this.onProgress = null;
+    }
+    
+    async getBestMove(state, player) {
+        return new Promise((resolve, reject) => {
+            // Create worker
+            this.worker = new Worker('mcts-worker.js');
+            
+            this.worker.onmessage = (e) => {
+                if (e.data.type === 'progress') {
+                    console.log(`[ParallelMCTS] Progress: ${e.data.simulations} simulations, ${e.data.elapsed}ms`);
+                    if (this.onProgress) {
+                        this.onProgress(e.data);
+                    }
+                } else if (e.data.type === 'result') {
+                    const { bestMove, simulations, elapsed, winRate, moveStats } = e.data;
+                    
+                    console.log(`ParallelMCTS: ${simulations} simulations in ${elapsed}ms, move: ${bestMove + 1}, win rate: ${(winRate * 100).toFixed(1)}%`);
+                    
+                    // Log for training
+                    gameLogger.logAIEvaluation('parallel-mcts', {
+                        simulations,
+                        elapsed,
+                        bestMove: bestMove + 1,
+                        winRate,
+                        moveStats
+                    });
+                    
+                    this.worker.terminate();
+                    this.worker = null;
+                    resolve(bestMove);
+                }
+            };
+            
+            this.worker.onerror = (e) => {
+                console.error('[ParallelMCTS] Worker error:', e);
+                this.worker.terminate();
+                this.worker = null;
+                reject(e);
+            };
+            
+            // Send state to worker
+            this.worker.postMessage({
+                stateData: state.toData(),
+                aiPlayer: player,
+                simulations: this.simulations,
+                timeLimit: this.timeLimit
+            });
+        });
+    }
+    
+    cancel() {
+        if (this.worker) {
+            this.worker.terminate();
+            this.worker = null;
+        }
     }
 }
 
@@ -467,6 +729,15 @@ class MinimaxAI {
         );
         
         console.log(`Minimax: ${this.nodesEvaluated} nodes, move: ${result.move + 1}, score: ${result.score.toFixed(1)}`);
+        
+        // Log for training
+        gameLogger.logAIEvaluation('minimax', {
+            depth: this.maxDepth,
+            nodesEvaluated: this.nodesEvaluated,
+            bestMove: result.move + 1,
+            score: result.score
+        });
+        
         return result.move;
     }
 }
@@ -505,6 +776,12 @@ const AI_LEVELS = {
         type: 'mcts',
         simulations: 30000,
         timeLimit: 10000
+    },
+    super: {
+        name: 'Супер',
+        type: 'parallel-mcts',
+        simulations: 100000,
+        timeLimit: 30000
     }
 };
 
@@ -527,7 +804,9 @@ class TogyzQumalaq {
     
     createAI(level) {
         const config = AI_LEVELS[level];
-        if (config.type === 'mcts') {
+        if (config.type === 'parallel-mcts') {
+            return new ParallelMCTSAI(config.simulations, config.timeLimit);
+        } else if (config.type === 'mcts') {
             return new MCTSAI(config.simulations, config.timeLimit);
         } else {
             return new MinimaxAI(config.depth);
@@ -552,10 +831,32 @@ class TogyzQumalaq {
             this.newGame();
         });
         
-        // Difficulty selector
         const difficultyBtn = document.getElementById('difficultyBtn');
         if (difficultyBtn) {
             difficultyBtn.addEventListener('click', () => this.cycleDifficulty());
+        }
+        
+        // Logger controls
+        const exportBtn = document.getElementById('exportDataBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => gameLogger.exportToJSON());
+        }
+        
+        const statsBtn = document.getElementById('logStatsBtn');
+        if (statsBtn) {
+            statsBtn.addEventListener('click', () => {
+                const stats = gameLogger.getStats();
+                alert(`📊 Game Stats:\n\nTotal Games: ${stats.totalGames}\nWhite Wins: ${stats.whiteWins}\nBlack Wins: ${stats.blackWins}\nDraws: ${stats.draws}\nAvg Moves: ${stats.avgMoves}\nAvg Duration: ${stats.avgDuration}s`);
+            });
+        }
+        
+        this.updateGamesCount();
+    }
+    
+    updateGamesCount() {
+        const el = document.getElementById('gamesLogged');
+        if (el) {
+            el.textContent = `${gameLogger.games.length} games`;
         }
     }
     
@@ -679,6 +980,9 @@ class TogyzQumalaq {
             }
         }
         
+        // Log move
+        gameLogger.logMove(player, pitIndex, this.lastMove.stones, this.state);
+        
         this.updateLastMove();
         this.isAnimating = false;
         
@@ -735,6 +1039,9 @@ class TogyzQumalaq {
         this.gameOver = true;
         const winner = this.checkWin();
         
+        // Log game end
+        gameLogger.endGame(winner, this.kazan);
+        
         const winnerText = document.getElementById('winnerText');
         const finalScore = document.getElementById('finalScore');
         
@@ -759,15 +1066,26 @@ class TogyzQumalaq {
         if (validMoves.length === 0) return;
         
         // Show thinking indicator
-        document.getElementById('turnText').textContent = 'AI ойлануда...';
+        const config = AI_LEVELS[this.aiLevel];
+        if (config.type === 'parallel-mcts') {
+            document.getElementById('turnText').textContent = 'AI ойлануда (Супер)... 🧠';
+        } else {
+            document.getElementById('turnText').textContent = 'AI ойлануда...';
+        }
         
-        // Use setTimeout to allow UI to update
         await this.delay(50);
         
-        const bestMove = this.ai.getBestMove(this.state, 'black');
-        
-        if (bestMove !== null) {
-            await this.makeMove(bestMove);
+        try {
+            const bestMove = await this.ai.getBestMove(this.state, 'black');
+            
+            if (bestMove !== null && !this.gameOver) {
+                await this.makeMove(bestMove);
+            }
+        } catch (e) {
+            console.error('AI error:', e);
+            // Fallback to random move
+            const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+            await this.makeMove(randomMove);
         }
     }
     
@@ -903,10 +1221,18 @@ class TogyzQumalaq {
     }
     
     newGame() {
+        // Cancel any running AI
+        if (this.ai && this.ai.cancel) {
+            this.ai.cancel();
+        }
+        
         this.state = new GameState();
         this.gameOver = false;
         this.isAnimating = false;
         this.lastMove = null;
+        
+        // Start logging new game
+        gameLogger.startGame(this.gameMode, this.gameMode === 'bot' ? this.aiLevel : null);
         
         document.getElementById('lastMove').textContent = '—';
         const modal = document.getElementById('winModal');
@@ -920,6 +1246,18 @@ class TogyzQumalaq {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
+
+// ==================== CONSOLE COMMANDS ====================
+// Expose logger functions for console use
+window.togyzLogger = {
+    export: () => gameLogger.exportToJSON(),
+    stats: () => console.table(gameLogger.getStats()),
+    clear: () => gameLogger.clearLogs(),
+    games: () => gameLogger.games
+};
+
+console.log('%c🎮 Тоғызқұмалақ Training Logger', 'font-size: 16px; font-weight: bold;');
+console.log('Commands: togyzLogger.export(), togyzLogger.stats(), togyzLogger.clear(), togyzLogger.games');
 
 // Initialize game
 document.addEventListener('DOMContentLoaded', () => {
