@@ -8,7 +8,14 @@ class GameLogger {
     constructor() {
         this.games = [];
         this.currentGame = null;
-        this.serverUrl = 'http://localhost:5000/api';
+        // Auto-detect server URL (production or local)
+        const hostname = window.location.hostname;
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            this.serverUrl = 'http://localhost:5000/api';
+        } else {
+            // Production: use same host
+            this.serverUrl = `${window.location.protocol}//${window.location.host}/api`;
+        }
         this.serverAvailable = false;
         this.checkServerConnection();
     }

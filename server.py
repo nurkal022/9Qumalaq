@@ -184,12 +184,18 @@ def export_games():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
+    import sys
+    
+    # Production mode if not debug
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    
     print("=" * 50)
     print("Тоғызқұмалақ Game Logger Server")
     print("=" * 50)
     print(f"Server starting on http://0.0.0.0:5000")
     print(f"Data directory: {os.path.abspath(DATA_DIR)}")
+    print(f"Debug mode: {debug_mode}")
     print("=" * 50)
     
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=debug_mode)
 
