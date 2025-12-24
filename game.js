@@ -1071,7 +1071,7 @@ class TogyzQumalaq {
         if (stones === 0) return;
         
         this.isAnimating = true;
-        this.lastMove = { player, pit: pitIndex + 1, stones };
+        this.lastMove = { player, fromPit: pitIndex + 1, toPit: null, toSide: null, stones };
         
         if (stones === 1) {
             this.pits[player][pitIndex] = 0;
@@ -1083,6 +1083,10 @@ class TogyzQumalaq {
                 nextPit = 0;
                 nextSide = opponent;
             }
+            
+            // Сохраняем конечную позицию
+            this.lastMove.toPit = nextPit + 1;
+            this.lastMove.toSide = nextSide;
             
             await this.delay(this.animationDelay);
             
@@ -1165,6 +1169,10 @@ class TogyzQumalaq {
             
             const lastPit = currentPit;
             const lastSide = currentSide;
+            
+            // Сохраняем конечную позицию
+            this.lastMove.toPit = lastPit + 1;
+            this.lastMove.toSide = lastSide;
             
             // Проверка на захват и создание түздық (только если это НЕ түздық)
             const lastIsAnyTuzdyk = (lastSide === 'black' && this.tuzdyk.white === lastPit) ||
@@ -1426,8 +1434,21 @@ class TogyzQumalaq {
     updateLastMove() {
         if (this.lastMove) {
             const playerName = this.lastMove.player === 'white' ? 'Ақ' : 'Қара';
+            const fromPit = this.lastMove.fromPit;
+            const toPit = this.lastMove.toPit;
+            const toSide = this.lastMove.toSide;
+            const stones = this.lastMove.stones;
+            
+            // Определяем, куда пришёл последний камень
+            let destination;
+            if (toSide === this.lastMove.player) {
+                destination = `${toPit}-отауға`; // На свою сторону
+            } else {
+                destination = `қарсылас ${toPit}-отауға`; // На сторону противника
+            }
+            
             document.getElementById('lastMove').textContent = 
-                `${playerName}: ${this.lastMove.pit}-отау (${this.lastMove.stones} тас)`;
+                `${playerName}: ${fromPit}-отаудан → ${destination} (${stones} тас)`;
         }
     }
     
