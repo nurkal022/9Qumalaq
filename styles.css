@@ -231,34 +231,49 @@ body {
     justify-content: center;
 }
 
-/* Static size pits - elongated vertically */
+/* Static size pits - elongated vertically with count area */
 .pit {
     width: 100px;
-    height: 120px;
-    background: radial-gradient(ellipse at center, var(--pit-inner) 0%, var(--pit-shadow) 100%);
-    border-radius: 20px;
+    height: 140px;
+    background: transparent;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     position: relative;
     cursor: pointer;
     transition: all 0.3s ease;
+}
+
+.stones-area {
+    flex: 1;
+    width: 100%;
+    background: radial-gradient(ellipse at center, var(--pit-inner) 0%, var(--pit-shadow) 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     box-shadow: 
         inset 0 8px 20px rgba(0, 0, 0, 0.6),
         inset 0 -3px 10px rgba(0, 0, 0, 0.3),
         0 3px 6px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
 }
 
-.pit:hover {
-    transform: translateY(-2px);
+.count-area {
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pit:hover .stones-area {
     box-shadow: 
         inset 0 8px 20px rgba(0, 0, 0, 0.6),
         inset 0 -3px 10px rgba(0, 0, 0, 0.3),
         0 6px 15px rgba(0, 0, 0, 0.4);
 }
 
-.pit.clickable:hover {
+.pit.clickable:hover .stones-area {
     box-shadow: 
         inset 0 8px 20px rgba(0, 0, 0, 0.6),
         inset 0 -3px 10px rgba(0, 0, 0, 0.3),
@@ -271,11 +286,14 @@ body {
     opacity: 0.7;
 }
 
-.pit.disabled:hover {
-    transform: none;
+.pit.disabled:hover .stones-area {
+    box-shadow: 
+        inset 0 8px 20px rgba(0, 0, 0, 0.6),
+        inset 0 -3px 10px rgba(0, 0, 0, 0.3),
+        0 3px 6px rgba(0, 0, 0, 0.3);
 }
 
-.pit.tuzdyk {
+.pit.tuzdyk .stones-area {
     background: radial-gradient(ellipse at center, #B71C1C 0%, #7f0000 100%);
     box-shadow: 
         inset 0 8px 20px rgba(0, 0, 0, 0.6),
@@ -283,17 +301,17 @@ body {
         0 0 15px rgba(239, 83, 80, 0.5);
 }
 
-.pit.tuzdyk::after {
+.pit.tuzdyk .stones-area::after {
     content: '✕';
     position: absolute;
-    top: 3px;
-    right: 6px;
+    top: 5px;
+    right: 8px;
     color: var(--accent-red);
     font-size: 0.85rem;
     font-weight: bold;
 }
 
-.pit.last-move {
+.pit.last-move .stones-area {
     animation: pulse-highlight 0.6s ease-out;
 }
 
@@ -301,6 +319,10 @@ body {
     0% { box-shadow: inset 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 0 rgba(255, 213, 79, 0.8); }
     50% { box-shadow: inset 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 213, 79, 0.8); }
     100% { box-shadow: inset 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 0 rgba(255, 213, 79, 0); }
+}
+
+.stones-area {
+    position: relative;
 }
 
 /* Stones container - 2 vertical columns, max 5 rows per layer */
@@ -401,14 +423,12 @@ body {
 }
 
 .stone-count {
-    position: absolute;
-    bottom: 5px;
     background: rgba(0, 0, 0, 0.7);
     color: var(--text-light);
-    padding: 2px 8px;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
 }
 
 /* Kazans stacked vertically in the middle */
@@ -557,7 +577,7 @@ body {
     
     .pit {
         width: 85px;
-        height: 105px;
+        height: 125px;
     }
     
     .stone {
@@ -568,6 +588,10 @@ body {
     .stones-container {
         width: 42px;
         height: 72px;
+    }
+    
+    .stones-area {
+        border-radius: 18px;
     }
 }
 
@@ -582,7 +606,7 @@ body {
     
     .pit {
         width: 75px;
-        height: 95px;
+        height: 115px;
     }
     
     .stone {
@@ -593,6 +617,10 @@ body {
     .stones-container {
         width: 38px;
         height: 65px;
+    }
+    
+    .stones-area {
+        border-radius: 16px;
     }
     
     .game-header h1 {
@@ -613,8 +641,7 @@ body {
     
     .pit {
         width: 65px;
-        height: 85px;
-        border-radius: 16px;
+        height: 105px;
     }
     
     .stone {
@@ -627,12 +654,25 @@ body {
         height: 58px;
     }
     
+    .stones-area {
+        border-radius: 14px;
+    }
+    
     .pit-numbers span {
         font-size: 0.8rem;
     }
     
     .kazan {
         height: 45px;
+    }
+    
+    .count-area {
+        height: 20px;
+    }
+    
+    .stone-count {
+        font-size: 0.7rem;
+        padding: 2px 8px;
     }
     
     .game-info {
@@ -663,8 +703,7 @@ body {
     
     .pit {
         width: 55px;
-        height: 75px;
-        border-radius: 14px;
+        height: 95px;
     }
     
     .stone {
@@ -675,6 +714,10 @@ body {
     .stones-container {
         width: 30px;
         height: 50px;
+    }
+    
+    .stones-area {
+        border-radius: 12px;
     }
     
     .stones-layer.layer-2 {
@@ -689,6 +732,15 @@ body {
     
     .pit-numbers span {
         font-size: 0.7rem;
+    }
+    
+    .count-area {
+        height: 18px;
+    }
+    
+    .stone-count {
+        font-size: 0.65rem;
+        padding: 1px 6px;
     }
 }
 
