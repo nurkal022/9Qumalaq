@@ -799,7 +799,7 @@ class TogyzQumalaq {
         this.ai = this.createAI(this.aiLevel);
         
         this.initUI();
-        this.renderBoard();
+        this.newGame();  // Initialize with a new game (hides modal, starts logging)
     }
     
     createAI(level) {
