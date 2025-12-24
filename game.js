@@ -8,6 +8,87 @@ class GameLogger {
     constructor() {
         this.games = [];
         this.currentGame = null;
+        this.serverUrl = 'http://localhost:5000/api';
+        this.serverAvailable = false;
+        this.checkServerConnection();
+    }
+    
+    async checkServerConnection() {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            
+            const response = await fetch(`${this.serverUrl}/health`, {
+                method: 'GET',
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+                this.serverAvailable = true;
+                console.log('[GameLogger] Server connection: OK');
+            } else {
+                this.serverAvailable = false;
+                console.warn('[GameLogger] Server connection: Failed');
+            }
+        } catch (e) {
+            this.serverAvailable = false;
+            console.warn('[GameLogger] Server connection: Unavailable, using localStorage fallback');
+        }
+    }
+    
+    async saveToServer(gameData) {
+        if (!this.serverAvailable) {
+            // Try to reconnect
+            await this.checkServerConnection();
+            if (!this.serverAvailable) {
+                return false;
+            }
+        }
+        
+        try {
+            const response = await fetch(`${this.serverUrl}/games`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(gameData)
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log(`[GameLogger] Saved to server: ${result.gameId} (Total: ${result.totalGames})`);
+                return true;
+            } else {
+                console.warn('[GameLogger] Server returned error:', response.status);
+                this.serverAvailable = false;
+                return false;
+            }
+        } catch (e) {
+            console.warn('[GameLogger] Failed to save to server:', e);
+            this.serverAvailable = false;
+            return false;
+        }
+    }
+    
+    async getServerStats() {
+        if (!this.serverAvailable) {
+            await this.checkServerConnection();
+            if (!this.serverAvailable) {
+                return null;
+            }
+        }
+        
+        try {
+            const response = await fetch(`${this.serverUrl}/games/stats`);
+            if (response.ok) {
+                return await response.json();
+            }
+        } catch (e) {
+            console.warn('[GameLogger] Failed to get server stats:', e);
+        }
+        return null;
     }
     
     startGame(mode, aiLevel = null) {
@@ -64,7 +145,7 @@ class GameLogger {
         console.log(`[GameLogger] AI Eval (${aiType}):`, data);
     }
     
-    endGame(winner, finalScore) {
+    async endGame(winner, finalScore) {
         if (!this.currentGame) return;
         
         this.currentGame.result = {
@@ -79,15 +160,25 @@ class GameLogger {
         console.log(`[GameLogger] Game ended: ${winner} wins (${finalScore.white}-${finalScore.black})`);
         console.log(`[GameLogger] Total games logged: ${this.games.length}`);
         
-        // Auto-save every 5 games
-        if (this.games.length % 5 === 0) {
+        // Try to save to server first
+        const savedToServer = await this.saveToServer(this.currentGame);
+        
+        if (!savedToServer) {
+            // Fallback to localStorage
             this.saveToLocalStorage();
+            console.log('[GameLogger] Saved to localStorage (server unavailable)');
         }
         
         // Update UI counter
         const el = document.getElementById('gamesLogged');
         if (el) {
-            el.textContent = `${this.games.length} games`;
+            const serverText = this.serverAvailable ? ' (server)' : ' (local)';
+            el.textContent = `${this.games.length} games${serverText}`;
+        }
+        
+        // Also update in game instance if available
+        if (window.game && window.game.updateGamesCount) {
+            window.game.updateGamesCount().catch(e => console.warn('Error updating games count:', e));
         }
         
         this.currentGame = null;
@@ -127,18 +218,41 @@ class GameLogger {
         }
     }
     
-    exportToJSON() {
-        const blob = new Blob([JSON.stringify(this.games, null, 2)], { type: 'application/json' });
+    async exportToJSON() {
+        let gamesToExport = this.games;
+        
+        // Try to get games from server if available
+        if (this.serverAvailable) {
+            try {
+                const response = await fetch(`${this.serverUrl}/games/export`);
+                if (response.ok) {
+                    const data = await response.json();
+                    gamesToExport = data.games;
+                    console.log(`[GameLogger] Exporting ${gamesToExport.length} games from server`);
+                }
+            } catch (e) {
+                console.warn('[GameLogger] Failed to export from server, using local games:', e);
+            }
+        }
+        
+        const blob = new Blob([JSON.stringify(gamesToExport, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `togyz_training_data_${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        console.log(`[GameLogger] Exported ${this.games.length} games`);
+        console.log(`[GameLogger] Exported ${gamesToExport.length} games`);
     }
     
-    getStats() {
+    async getStats() {
+        // Try to get stats from server first
+        const serverStats = await this.getServerStats();
+        if (serverStats) {
+            return serverStats;
+        }
+        
+        // Fallback to local stats
         const stats = {
             totalGames: this.games.length,
             whiteWins: 0,
@@ -856,24 +970,30 @@ class TogyzQumalaq {
         // Logger controls
         const exportBtn = document.getElementById('exportDataBtn');
         if (exportBtn) {
-            exportBtn.addEventListener('click', () => gameLogger.exportToJSON());
+            exportBtn.addEventListener('click', async () => {
+                await gameLogger.exportToJSON();
+            });
         }
         
         const statsBtn = document.getElementById('logStatsBtn');
         if (statsBtn) {
-            statsBtn.addEventListener('click', () => {
-                const stats = gameLogger.getStats();
-                alert(`📊 Game Stats:\n\nTotal Games: ${stats.totalGames}\nWhite Wins: ${stats.whiteWins}\nBlack Wins: ${stats.blackWins}\nDraws: ${stats.draws}\nAvg Moves: ${stats.avgMoves}\nAvg Duration: ${stats.avgDuration}s`);
+            statsBtn.addEventListener('click', async () => {
+                const stats = await gameLogger.getStats();
+                const source = gameLogger.serverAvailable ? ' (server)' : ' (local)';
+                alert(`📊 Game Stats${source}:\n\nTotal Games: ${stats.totalGames}\nWhite Wins: ${stats.whiteWins}\nBlack Wins: ${stats.blackWins}\nDraws: ${stats.draws}\nAvg Moves: ${stats.avgMoves}\nAvg Duration: ${stats.avgDuration}s`);
             });
         }
         
-        this.updateGamesCount();
+        this.updateGamesCount().catch(e => console.warn('Error updating games count:', e));
     }
     
-    updateGamesCount() {
+    async updateGamesCount() {
         const el = document.getElementById('gamesLogged');
         if (el) {
-            el.textContent = `${gameLogger.games.length} games`;
+            // Check server status
+            await gameLogger.checkServerConnection();
+            const serverText = gameLogger.serverAvailable ? ' (server)' : ' (local)';
+            el.textContent = `${gameLogger.games.length} games${serverText}`;
         }
     }
     
@@ -1056,8 +1176,10 @@ class TogyzQumalaq {
         this.gameOver = true;
         const winner = this.checkWin();
         
-        // Log game end
-        gameLogger.endGame(winner, this.kazan);
+        // Log game end (async, but don't wait)
+        gameLogger.endGame(winner, this.kazan).catch(e => {
+            console.warn('[GameLogger] Error ending game:', e);
+        });
         
         const winnerText = document.getElementById('winnerText');
         const finalScore = document.getElementById('finalScore');
@@ -1341,7 +1463,10 @@ class StartScreen {
 // Expose logger functions for console use
 window.togyzLogger = {
     export: () => gameLogger.exportToJSON(),
-    stats: () => console.table(gameLogger.getStats()),
+    stats: async () => {
+        const stats = await gameLogger.getStats();
+        console.table(stats);
+    },
     clear: () => gameLogger.clearLogs(),
     games: () => gameLogger.games
 };
