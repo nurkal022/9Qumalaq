@@ -1,9 +1,9 @@
 /**
  * Тоғызқұмалақ - Traditional Kazakh board game
- * Game logic and AI
+ * Game logic and AI (Minimax + MCTS)
  */
 
-// ==================== GAME STATE (for AI simulation) ====================
+// ==================== GAME STATE ====================
 class GameState {
     constructor() {
         this.pits = {
@@ -47,7 +47,6 @@ class GameState {
         return true;
     }
     
-    // Fast move simulation without animation
     makeMove(pitIndex) {
         const player = this.currentPlayer;
         const opponent = this.getOpponent(player);
@@ -60,7 +59,6 @@ class GameState {
         let currentPit = pitIndex;
         let currentSide = player;
         
-        // Special case: 1 stone moves to next pit
         if (stones === 1) {
             currentPit++;
             if (currentPit > 8) {
@@ -68,18 +66,15 @@ class GameState {
                 currentSide = opponent;
             }
             
-            // Check if landing on own tuzdyk
             if (currentSide === opponent && this.tuzdyk[player] === currentPit) {
                 this.kazan[player]++;
             } else {
                 this.pits[currentSide][currentPit]++;
             }
         } else {
-            // First stone in same pit
             this.pits[currentSide][currentPit]++;
             stones--;
             
-            // Distribute remaining
             while (stones > 0) {
                 currentPit++;
                 if (currentPit > 8) {
@@ -87,7 +82,6 @@ class GameState {
                     currentSide = currentSide === 'white' ? 'black' : 'white';
                 }
                 
-                // Tuzdyk capture during distribution
                 if (currentSide !== player && this.tuzdyk[player] === currentPit) {
                     this.kazan[player]++;
                 } else {
@@ -97,17 +91,14 @@ class GameState {
             }
         }
         
-        // Check captures
         if (currentSide === opponent && this.tuzdyk[opponent] !== currentPit) {
             const count = this.pits[opponent][currentPit];
             
-            // Tuzdyk creation
             if (count === 3 && this.canCreateTuzdyk(player, currentPit)) {
                 this.tuzdyk[player] = currentPit;
                 this.kazan[player] += count;
                 this.pits[opponent][currentPit] = 0;
             }
-            // Even capture
             else if (count % 2 === 0 && count > 0) {
                 this.kazan[player] += count;
                 this.pits[opponent][currentPit] = 0;
@@ -132,17 +123,197 @@ class GameState {
         if (this.kazan.black > this.kazan.white) return 'black';
         return 'draw';
     }
+    
+    // Quick evaluation for MCTS playout policy
+    quickEvaluate(player) {
+        const opp = this.getOpponent(player);
+        return (this.kazan[player] - this.kazan[opp]) + 
+               (this.tuzdyk[player] !== -1 ? 10 : 0) -
+               (this.tuzdyk[opp] !== -1 ? 10 : 0);
+    }
 }
 
-// ==================== AI ENGINE ====================
-class TogyzAI {
-    constructor(difficulty = 'hard') {
-        this.difficulty = difficulty;
-        this.maxDepth = difficulty === 'hard' ? 6 : (difficulty === 'medium' ? 4 : 2);
+// ==================== MCTS NODE ====================
+class MCTSNode {
+    constructor(state, parent = null, move = null) {
+        this.state = state;
+        this.parent = parent;
+        this.move = move;
+        this.children = [];
+        this.wins = 0;
+        this.visits = 0;
+        this.untriedMoves = state.getValidMoves(state.currentPlayer);
+    }
+    
+    isFullyExpanded() {
+        return this.untriedMoves.length === 0;
+    }
+    
+    hasChildren() {
+        return this.children.length > 0;
+    }
+    
+    // UCT formula for child selection
+    getUCTValue(explorationWeight) {
+        if (this.visits === 0) return Infinity;
+        return (this.wins / this.visits) + 
+               explorationWeight * Math.sqrt(Math.log(this.parent.visits) / this.visits);
+    }
+    
+    selectChild(explorationWeight) {
+        let best = null;
+        let bestValue = -Infinity;
+        
+        for (const child of this.children) {
+            const uct = child.getUCTValue(explorationWeight);
+            if (uct > bestValue) {
+                bestValue = uct;
+                best = child;
+            }
+        }
+        return best;
+    }
+    
+    expand() {
+        const move = this.untriedMoves.pop();
+        const newState = this.state.clone();
+        newState.makeMove(move);
+        
+        const childNode = new MCTSNode(newState, this, move);
+        this.children.push(childNode);
+        return childNode;
+    }
+    
+    update(winner, aiPlayer) {
+        this.visits++;
+        if (winner === aiPlayer) {
+            this.wins += 1;
+        } else if (winner === 'draw') {
+            this.wins += 0.5;
+        }
+    }
+    
+    getBestMove() {
+        let best = null;
+        let bestVisits = -1;
+        
+        for (const child of this.children) {
+            if (child.visits > bestVisits) {
+                bestVisits = child.visits;
+                best = child;
+            }
+        }
+        return best ? best.move : null;
+    }
+}
+
+// ==================== MCTS AI ====================
+class MCTSAI {
+    constructor(simulations = 5000, timeLimit = 3000, explorationWeight = 1.41) {
+        this.simulations = simulations;
+        this.timeLimit = timeLimit;
+        this.C = explorationWeight;
+        this.simulationsRun = 0;
+    }
+    
+    // Smart playout - mix of random and greedy
+    simulate(state, aiPlayer) {
+        const simState = state.clone();
+        let moveCount = 0;
+        const maxMoves = 200;
+        
+        while (!simState.isGameOver() && moveCount < maxMoves) {
+            const moves = simState.getValidMoves(simState.currentPlayer);
+            if (moves.length === 0) break;
+            
+            let selectedMove;
+            
+            // 70% greedy, 30% random for better playouts
+            if (Math.random() < 0.7) {
+                // Greedy: pick move with best immediate capture
+                let bestScore = -Infinity;
+                selectedMove = moves[0];
+                
+                for (const move of moves) {
+                    const testState = simState.clone();
+                    const kazanBefore = testState.kazan[testState.currentPlayer];
+                    testState.makeMove(move);
+                    const kazanAfter = testState.kazan[simState.currentPlayer];
+                    const score = kazanAfter - kazanBefore + Math.random() * 0.5;
+                    
+                    if (score > bestScore) {
+                        bestScore = score;
+                        selectedMove = move;
+                    }
+                }
+            } else {
+                selectedMove = moves[Math.floor(Math.random() * moves.length)];
+            }
+            
+            simState.makeMove(selectedMove);
+            moveCount++;
+        }
+        
+        return simState.getWinner();
+    }
+    
+    search(rootState, aiPlayer) {
+        const root = new MCTSNode(rootState.clone());
+        const startTime = Date.now();
+        this.simulationsRun = 0;
+        
+        while (this.simulationsRun < this.simulations && 
+               (Date.now() - startTime) < this.timeLimit) {
+            
+            let node = root;
+            
+            // 1. Selection - traverse to leaf
+            while (node.isFullyExpanded() && node.hasChildren()) {
+                node = node.selectChild(this.C);
+            }
+            
+            // 2. Expansion - add new node
+            if (!node.state.isGameOver() && !node.isFullyExpanded()) {
+                node = node.expand();
+            }
+            
+            // 3. Simulation - playout to end
+            const winner = this.simulate(node.state, aiPlayer);
+            
+            // 4. Backpropagation - update stats
+            while (node !== null) {
+                node.update(winner, aiPlayer);
+                node = node.parent;
+            }
+            
+            this.simulationsRun++;
+        }
+        
+        return root;
+    }
+    
+    getBestMove(state, player) {
+        const root = this.search(state, player);
+        const bestMove = root.getBestMove();
+        
+        // Log stats
+        const bestChild = root.children.find(c => c.move === bestMove);
+        if (bestChild) {
+            const winRate = (bestChild.wins / bestChild.visits * 100).toFixed(1);
+            console.log(`MCTS: ${this.simulationsRun} simulations, move: ${bestMove + 1}, win rate: ${winRate}%`);
+        }
+        
+        return bestMove;
+    }
+}
+
+// ==================== MINIMAX AI ====================
+class MinimaxAI {
+    constructor(maxDepth = 6) {
+        this.maxDepth = maxDepth;
         this.nodesEvaluated = 0;
     }
     
-    // Minimax with Alpha-Beta pruning
     minimax(state, depth, alpha, beta, maximizingPlayer, aiPlayer) {
         this.nodesEvaluated++;
         
@@ -150,16 +321,12 @@ class TogyzAI {
             return { score: this.evaluate(state, aiPlayer), move: null };
         }
         
-        const currentPlayer = state.currentPlayer;
-        const moves = state.getValidMoves(currentPlayer);
-        
+        const moves = state.getValidMoves(state.currentPlayer);
         if (moves.length === 0) {
             return { score: this.evaluate(state, aiPlayer), move: null };
         }
         
-        // Move ordering - prioritize captures and tuzdyk
-        const orderedMoves = this.orderMoves(state, moves, currentPlayer);
-        
+        const orderedMoves = this.orderMoves(state, moves, state.currentPlayer);
         let bestMove = orderedMoves[0];
         
         if (maximizingPlayer) {
@@ -177,7 +344,7 @@ class TogyzAI {
                 }
                 
                 alpha = Math.max(alpha, result.score);
-                if (beta <= alpha) break; // Alpha-Beta cutoff
+                if (beta <= alpha) break;
             }
             
             return { score: maxScore, move: bestMove };
@@ -203,14 +370,12 @@ class TogyzAI {
         }
     }
     
-    // Move ordering for better pruning
     orderMoves(state, moves, player) {
         const opponent = state.getOpponent(player);
         const scored = moves.map(move => {
             let priority = 0;
             const stones = state.pits[player][move];
             
-            // Simulate to find landing position
             let pos = move;
             let side = player;
             let remaining = stones;
@@ -230,11 +395,10 @@ class TogyzAI {
                 }
             }
             
-            // Check capture potential
             if (side === opponent) {
                 const targetStones = state.pits[opponent][pos] + 1;
                 if (targetStones === 3 && state.canCreateTuzdyk(player, pos)) {
-                    priority += 50; // Tuzdyk is very valuable
+                    priority += 50;
                 } else if (targetStones % 2 === 0) {
                     priority += targetStones * 2;
                 }
@@ -247,71 +411,44 @@ class TogyzAI {
         return scored.map(s => s.move);
     }
     
-    // Position evaluation
     evaluate(state, aiPlayer) {
         const opponent = state.getOpponent(aiPlayer);
         let score = 0;
         
-        // 1. Kazan difference (most important)
         score += (state.kazan[aiPlayer] - state.kazan[opponent]) * 10;
         
-        // 2. Win/Loss check
         if (state.kazan[aiPlayer] >= 82) return 10000;
         if (state.kazan[opponent] >= 82) return -10000;
         
-        // 3. Tuzdyk value (very important!)
         if (state.tuzdyk[aiPlayer] !== -1) {
-            // Value based on position - center tuzdyks are better
-            const tuzdykPos = state.tuzdyk[aiPlayer];
-            const tuzdykValue = 25 + (4 - Math.abs(4 - tuzdykPos)) * 3;
-            score += tuzdykValue;
+            const pos = state.tuzdyk[aiPlayer];
+            score += 25 + (4 - Math.abs(4 - pos)) * 3;
         }
         if (state.tuzdyk[opponent] !== -1) {
-            const tuzdykPos = state.tuzdyk[opponent];
-            const tuzdykValue = 25 + (4 - Math.abs(4 - tuzdykPos)) * 3;
-            score -= tuzdykValue;
+            const pos = state.tuzdyk[opponent];
+            score -= 25 + (4 - Math.abs(4 - pos)) * 3;
         }
         
-        // 4. Potential tuzdyk (if can create one)
         if (state.tuzdyk[aiPlayer] === -1) {
             for (let i = 0; i < 8; i++) {
                 if (state.pits[opponent][i] === 2 && state.canCreateTuzdyk(aiPlayer, i)) {
-                    score += 8; // Close to creating tuzdyk
+                    score += 8;
                 }
             }
         }
         
-        // 5. Stone distribution and control
         for (let i = 0; i < 9; i++) {
             const myStones = state.pits[aiPlayer][i];
             const oppStones = state.pits[opponent][i];
-            
-            // Center pits (4,5,6 - indices 3,4,5) are slightly more valuable
             const centerBonus = (i >= 3 && i <= 5) ? 1.2 : 1.0;
             
             score += myStones * 0.3 * centerBonus;
             score -= oppStones * 0.3 * centerBonus;
-            
-            // Potential captures
-            if (oppStones > 0 && oppStones % 2 === 1) {
-                // Odd stones - one more makes even (capturable)
-                score += 0.5;
-            }
         }
         
-        // 6. Mobility (having moves is good)
         const myMoves = state.getValidMoves(aiPlayer).length;
         const oppMoves = state.getValidMoves(opponent).length;
         score += (myMoves - oppMoves) * 1.5;
-        
-        // 7. Endgame considerations
-        const totalOnBoard = state.pits.white.reduce((a, b) => a + b, 0) + 
-                            state.pits.black.reduce((a, b) => a + b, 0);
-        
-        if (totalOnBoard < 50) {
-            // In endgame, kazan lead is more important
-            score += (state.kazan[aiPlayer] - state.kazan[opponent]) * 5;
-        }
         
         return score;
     }
@@ -329,10 +466,47 @@ class TogyzAI {
             player
         );
         
-        console.log(`AI evaluated ${this.nodesEvaluated} nodes, best move: ${result.move + 1}, score: ${result.score.toFixed(1)}`);
+        console.log(`Minimax: ${this.nodesEvaluated} nodes, move: ${result.move + 1}, score: ${result.score.toFixed(1)}`);
         return result.move;
     }
 }
+
+// ==================== AI DIFFICULTY LEVELS ====================
+const AI_LEVELS = {
+    easy: {
+        name: 'Жеңіл',
+        type: 'minimax',
+        depth: 2
+    },
+    medium: {
+        name: 'Орташа', 
+        type: 'minimax',
+        depth: 4
+    },
+    hard: {
+        name: 'Қиын',
+        type: 'minimax',
+        depth: 6
+    },
+    expert: {
+        name: 'Эксперт',
+        type: 'mcts',
+        simulations: 5000,
+        timeLimit: 2000
+    },
+    master: {
+        name: 'Мастер',
+        type: 'mcts',
+        simulations: 15000,
+        timeLimit: 5000
+    },
+    grandmaster: {
+        name: 'Гроссмейстер',
+        type: 'mcts',
+        simulations: 30000,
+        timeLimit: 10000
+    }
+};
 
 // ==================== MAIN GAME CLASS ====================
 class TogyzQumalaq {
@@ -341,17 +515,25 @@ class TogyzQumalaq {
         this.gameOver = false;
         this.isAnimating = false;
         this.gameMode = 'pvp';
+        this.aiLevel = 'hard';
         this.lastMove = null;
         this.animationDelay = 60;
         
-        // AI
-        this.ai = new TogyzAI('hard');
+        this.ai = this.createAI(this.aiLevel);
         
         this.initUI();
         this.renderBoard();
     }
     
-    // Getters for compatibility
+    createAI(level) {
+        const config = AI_LEVELS[level];
+        if (config.type === 'mcts') {
+            return new MCTSAI(config.simulations, config.timeLimit);
+        } else {
+            return new MinimaxAI(config.depth);
+        }
+    }
+    
     get pits() { return this.state.pits; }
     get kazan() { return this.state.kazan; }
     get tuzdyk() { return this.state.tuzdyk; }
@@ -369,6 +551,27 @@ class TogyzQumalaq {
             document.getElementById('winModal').classList.remove('show');
             this.newGame();
         });
+        
+        // Difficulty selector
+        const difficultyBtn = document.getElementById('difficultyBtn');
+        if (difficultyBtn) {
+            difficultyBtn.addEventListener('click', () => this.cycleDifficulty());
+        }
+    }
+    
+    cycleDifficulty() {
+        const levels = Object.keys(AI_LEVELS);
+        const currentIndex = levels.indexOf(this.aiLevel);
+        const nextIndex = (currentIndex + 1) % levels.length;
+        this.aiLevel = levels[nextIndex];
+        this.ai = this.createAI(this.aiLevel);
+        
+        const btn = document.getElementById('difficultyBtn');
+        if (btn) {
+            btn.textContent = `AI: ${AI_LEVELS[this.aiLevel].name}`;
+        }
+        
+        console.log(`AI level changed to: ${this.aiLevel} (${AI_LEVELS[this.aiLevel].type})`);
     }
     
     handlePitClick(pitElement) {
@@ -393,7 +596,6 @@ class TogyzQumalaq {
         this.isAnimating = true;
         this.lastMove = { player, pit: pitIndex + 1, stones };
         
-        // Animation logic
         if (stones === 1) {
             this.pits[player][pitIndex] = 0;
             
@@ -415,7 +617,6 @@ class TogyzQumalaq {
                 this.renderBoard();
             }
             
-            // Check capture
             if (nextSide === opponent && this.tuzdyk[player] !== nextPit) {
                 const count = this.pits[opponent][nextPit];
                 
@@ -490,7 +691,6 @@ class TogyzQumalaq {
         this.updateTurnIndicator();
         this.updateClickablePits();
         
-        // AI move
         if (this.gameMode === 'bot' && this.currentPlayer === 'black' && !this.gameOver) {
             await this.delay(300);
             this.makeBotMove();
@@ -552,14 +752,18 @@ class TogyzQumalaq {
         modal.classList.add('show');
     }
     
-    // AI Move
     async makeBotMove() {
         if (this.gameOver || this.isAnimating) return;
         
         const validMoves = this.state.getValidMoves('black');
         if (validMoves.length === 0) return;
         
-        // Use AI to get best move
+        // Show thinking indicator
+        document.getElementById('turnText').textContent = 'AI ойлануда...';
+        
+        // Use setTimeout to allow UI to update
+        await this.delay(50);
+        
         const bestMove = this.ai.getBestMove(this.state, 'black');
         
         if (bestMove !== null) {
@@ -567,7 +771,6 @@ class TogyzQumalaq {
         }
     }
     
-    // UI Methods
     renderBoard() {
         for (let i = 0; i < 9; i++) {
             this.renderPit('white', i);
