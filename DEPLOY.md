@@ -80,45 +80,60 @@ systemctl start togyzqumalaq-logger
 systemctl status togyzqumalaq-logger
 ```
 
-### 7. Настроить Nginx
+### 7. Настроить Nginx (для подпути /togyzqumalaq)
 
+**Важно:** На сервере уже есть другой сайт, поэтому проект будет доступен по адресу `/togyzqumalaq`
+
+Найдите ваш активный nginx конфиг:
 ```bash
-cat > /etc/nginx/sites-available/togyzqumalaq << 'EOF'
-server {
-    listen 80;
-    server_name 91.186.197.89;
+ls -la /etc/nginx/sites-enabled/
+```
 
-    # Статические файлы игры
-    location / {
-        root /var/www/togyzqumalaq/static;
+Добавьте location блоки в существующий server блок:
+
+**Вариант 1: Автоматически**
+```bash
+# На сервере после выполнения setup_server.sh
+./add_nginx_config.sh /etc/nginx/sites-enabled/ваш-сайт
+```
+
+**Вариант 2: Вручную**
+```bash
+# Добавить содержимое файла в ваш nginx конфиг
+cat /etc/nginx/sites-available/togyzqumalaq-locations.conf >> /etc/nginx/sites-enabled/ваш-сайт
+```
+
+Или добавьте вручную в server блок:
+```nginx
+    # Статические файлы игры Тоғызқұмалақ
+    location /togyzqumalaq/ {
+        alias /var/www/togyzqumalaq/static/;
         index index.html;
-        try_files $uri $uri/ =404;
+        try_files $uri $uri/ /togyzqumalaq/index.html;
     }
 
-    # API для логирования
-    location /api {
+    # API для логирования Тоғызқұмалақ
+    location /togyzqumalaq/api {
+        rewrite ^/togyzqumalaq/api(.*) $1 break;
         proxy_pass http://127.0.0.1:5000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
-}
-EOF
 ```
 
-### 8. Активировать конфигурацию Nginx
+### 8. Проверить и перезагрузить Nginx
 
 ```bash
-ln -sf /etc/nginx/sites-available/togyzqumalaq /etc/nginx/sites-enabled/
 nginx -t  # Проверка конфигурации
 systemctl reload nginx
 ```
 
 ### 9. Проверить работу
 
-- Игра: http://91.186.197.89
-- API Health: http://91.186.197.89/api/health
+- Игра: http://91.186.197.89/togyzqumalaq/
+- API Health: http://91.186.197.89/togyzqumalaq/api/health
 
 ## Полезные команды
 

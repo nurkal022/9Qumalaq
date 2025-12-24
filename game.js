@@ -10,11 +10,17 @@ class GameLogger {
         this.currentGame = null;
         // Auto-detect server URL (production or local)
         const hostname = window.location.hostname;
+        const pathname = window.location.pathname;
+        
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
             this.serverUrl = 'http://localhost:5000/api';
         } else {
-            // Production: use same host
-            this.serverUrl = `${window.location.protocol}//${window.location.host}/api`;
+            // Production: detect if we're in a subpath
+            let basePath = '';
+            if (pathname.includes('/togyzqumalaq')) {
+                basePath = '/togyzqumalaq';
+            }
+            this.serverUrl = `${window.location.protocol}//${window.location.host}${basePath}/api`;
         }
         this.serverAvailable = false;
         this.checkServerConnection();

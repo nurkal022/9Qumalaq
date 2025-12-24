@@ -38,37 +38,64 @@ RestartSec=10
 WantedBy=multi-user.target
 EOF
 
-# 4. Создать конфигурацию nginx
+# 4. Создать конфигурацию nginx для подпути
 echo "🌐 Создание конфигурации nginx..."
 cat > /etc/nginx/sites-available/togyzqumalaq << 'EOF'
-server {
-    listen 80;
-    server_name 91.186.197.89;
+# Конфигурация для Тоғызқұмалақ на подпути /togyzqumalaq
+# Добавьте эти location блоки в существующий server блок вашего сайта
 
     # Статические файлы игры
-    location / {
-        root /var/www/togyzqumalaq/static;
+    location /togyzqumalaq/ {
+        alias /var/www/togyzqumalaq/static/;
         index index.html;
-        try_files $uri $uri/ =404;
+        try_files $uri $uri/ /togyzqumalaq/index.html;
     }
 
     # API для логирования
-    location /api {
+    location /togyzqumalaq/api {
+        rewrite ^/togyzqumalaq/api(.*) $1 break;
         proxy_pass http://127.0.0.1:5000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
-}
 EOF
 
-# 5. Активировать nginx конфигурацию
-echo "🔗 Активация nginx..."
-if [ -f /etc/nginx/sites-enabled/togyzqumalaq ]; then
-    rm /etc/nginx/sites-enabled/togyzqumalaq
-fi
-ln -sf /etc/nginx/sites-available/togyzqumalaq /etc/nginx/sites-enabled/
+# Создать файл с инструкциями для добавления в существующий конфиг
+cat > /etc/nginx/sites-available/togyzqumalaq-locations.conf << 'EOF'
+    # Статические файлы игры Тоғызқұмалақ
+    location /togyzqumalaq/ {
+        alias /var/www/togyzqumalaq/static/;
+        index index.html;
+        try_files $uri $uri/ /togyzqumalaq/index.html;
+    }
+
+    # API для логирования Тоғызқұмалақ
+    location /togyzqumalaq/api {
+        rewrite ^/togyzqumalaq/api(.*) $1 break;
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+EOF
+
+# 5. Инструкции по добавлению в nginx
+echo ""
+echo "⚠️  ВАЖНО: Нужно добавить конфигурацию в существующий server блок nginx!"
+echo ""
+echo "Содержимое для добавления сохранено в:"
+echo "  /etc/nginx/sites-available/togyzqumalaq-locations.conf"
+echo ""
+echo "Добавьте содержимое этого файла в ваш существующий server блок"
+echo "в файле /etc/nginx/sites-enabled/ваш-сайт"
+echo ""
+echo "Или выполните:"
+echo "  cat /etc/nginx/sites-available/togyzqumalaq-locations.conf >> /etc/nginx/sites-enabled/ваш-сайт"
+echo ""
+read -p "Нажмите Enter после добавления конфигурации в nginx, чтобы проверить и перезагрузить..."
 
 # Проверка конфигурации nginx
 if nginx -t; then
@@ -76,6 +103,7 @@ if nginx -t; then
     echo "✅ Nginx перезагружен"
 else
     echo "❌ Ошибка в конфигурации nginx!"
+    echo "Проверьте конфигурацию: nginx -t"
     exit 1
 fi
 
@@ -92,8 +120,13 @@ systemctl status $SERVICE_NAME --no-pager -l | head -20
 
 echo ""
 echo "✨ Настройка завершена!"
-echo "🌐 Игра доступна по адресу: http://91.186.197.89"
-echo "📊 API доступен по адресу: http://91.186.197.89/api/health"
+echo ""
+echo "⚠️  ВАЖНО: После добавления конфигурации в nginx игра будет доступна:"
+echo "  🌐 http://91.186.197.89/togyzqumalaq/"
+echo "  📊 http://91.186.197.89/togyzqumalaq/api/health"
+echo ""
+echo "Для добавления конфигурации используйте:"
+echo "  ./add_nginx_config.sh /etc/nginx/sites-enabled/ваш-сайт"
 echo ""
 echo "Полезные команды:"
 echo "  systemctl status $SERVICE_NAME  - статус сервиса"

@@ -29,7 +29,7 @@ $SSH_CMD $SERVER "mkdir -p $SERVER_DIR/{game_logs,static}"
 # 2. Копировать файлы
 echo "📦 Копирование файлов..."
 $SCP_CMD index.html styles.css game.js mcts-worker.js $SERVER:$SERVER_DIR/static/
-$SCP_CMD server.py requirements.txt setup_server.sh $SERVER:$SERVER_DIR/
+$SCP_CMD server.py requirements.txt setup_server.sh add_nginx_config.sh $SERVER:$SERVER_DIR/
 
 # 3. Установить зависимости Python
 echo "📥 Установка зависимостей Python..."
@@ -56,35 +56,61 @@ WantedBy=multi-user.target
 EOF
 "
 
-# 5. Создать конфигурацию nginx
+# 5. Создать конфигурацию nginx (подпуть /togyzqumalaq)
 echo "🌐 Настройка nginx..."
-ssh $SERVER "cat > /etc/nginx/sites-available/togyzqumalaq << 'EOF'
-server {
-    listen 80;
-    server_name 91.186.197.89;
+$SSH_CMD $SERVER "cat > /etc/nginx/sites-available/togyzqumalaq << 'EOF'
+# Конфигурация для Тоғызқұмалақ на подпути /togyzqumalaq
+# Добавьте эти location блоки в существующий server блок
 
     # Статические файлы игры
-    location / {
-        root $SERVER_DIR/static;
+    location /togyzqumalaq/ {
+        alias $SERVER_DIR/static/;
         index index.html;
-        try_files \$uri \$uri/ =404;
+        try_files \$uri \$uri/ /togyzqumalaq/index.html;
     }
 
     # API для логирования
-    location /api {
+    location /togyzqumalaq/api {
+        rewrite ^/togyzqumalaq/api(.*) \$1 break;
         proxy_pass http://127.0.0.1:5000;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
     }
-}
 EOF
 "
 
-# 6. Активировать nginx конфигурацию
-echo "🔗 Активация nginx конфигурации..."
-$SSH_CMD $SERVER "ln -sf /etc/nginx/sites-available/togyzqumalaq /etc/nginx/sites-enabled/ && nginx -t && systemctl reload nginx"
+# 6. Создать файл с location блоками для добавления в существующий nginx
+echo "🔗 Создание конфигурации nginx..."
+$SSH_CMD $SERVER "cat > /etc/nginx/sites-available/togyzqumalaq-locations.conf << 'EOF'
+    # Статические файлы игры Тоғызқұмалақ
+    location /togyzqumalaq/ {
+        alias /var/www/togyzqumalaq/static/;
+        index index.html;
+        try_files \$uri \$uri/ /togyzqumalaq/index.html;
+    }
+
+    # API для логирования Тоғызқұмалақ
+    location /togyzqumalaq/api {
+        rewrite ^/togyzqumalaq/api(.*) \$1 break;
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+EOF
+"
+
+echo ""
+echo "⚠️  ВАЖНО: Нужно добавить конфигурацию в существующий server блок nginx!"
+echo "Содержимое сохранено в: /etc/nginx/sites-available/togyzqumalaq-locations.conf"
+echo ""
+echo "Выполните на сервере:"
+echo "  cat /etc/nginx/sites-available/togyzqumalaq-locations.conf >> /etc/nginx/sites-enabled/ваш-сайт"
+echo "  nginx -t && systemctl reload nginx"
+echo ""
 
 # 7. Запустить и включить Flask сервис
 echo "🔄 Запуск сервиса логирования..."
@@ -96,8 +122,19 @@ $SSH_CMD $SERVER "systemctl status $SERVICE_NAME --no-pager -l"
 
 echo ""
 echo "✨ Развертывание завершено!"
-echo "🌐 Игра доступна по адресу: http://91.186.197.89"
-echo "📊 API доступен по адресу: http://91.186.197.89/api"
+echo ""
+echo "⚠️  СЛЕДУЮЩИЙ ШАГ: Добавить конфигурацию в nginx!"
+echo ""
+echo "На сервере выполните:"
+echo "  ssh $SERVER"
+echo "  cd $SERVER_DIR"
+echo "  chmod +x add_nginx_config.sh"
+echo "  ls -la /etc/nginx/sites-enabled/  # найти ваш конфиг"
+echo "  ./add_nginx_config.sh /etc/nginx/sites-enabled/ваш-сайт"
+echo ""
+echo "После этого игра будет доступна:"
+echo "  🌐 http://91.186.197.89/togyzqumalaq/"
+echo "  📊 http://91.186.197.89/togyzqumalaq/api/health"
 echo ""
 echo "Полезные команды:"
 echo "  systemctl status $SERVICE_NAME  - статус сервиса"

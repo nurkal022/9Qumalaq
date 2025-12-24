@@ -26,7 +26,7 @@ $SCP_CMD index.html styles.css game.js mcts-worker.js $SERVER:$SERVER_DIR/static
 
 # Копировать серверные файлы
 echo "🐍 Копирование серверных файлов..."
-$SCP_CMD server.py requirements.txt setup_server.sh $SERVER:$SERVER_DIR/
+$SCP_CMD server.py requirements.txt setup_server.sh add_nginx_config.sh $SERVER:$SERVER_DIR/
 
 echo "✅ Файлы скопированы!"
 echo ""
