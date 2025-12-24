@@ -84,8 +84,14 @@ class GameState {
                 currentSide = opponent;
             }
             
-            if (currentSide === opponent && this.tuzdyk[player] === currentPit) {
-                this.kazan[player]++;
+            // Проверяем, является ли лунка чьим-либо түздық
+            const isWhiteTuzdyk = currentSide === 'black' && this.tuzdyk.white === currentPit;
+            const isBlackTuzdyk = currentSide === 'white' && this.tuzdyk.black === currentPit;
+            
+            if (isWhiteTuzdyk) {
+                this.kazan.white++;
+            } else if (isBlackTuzdyk) {
+                this.kazan.black++;
             } else {
                 this.pits[currentSide][currentPit]++;
             }
@@ -100,8 +106,14 @@ class GameState {
                     currentSide = currentSide === 'white' ? 'black' : 'white';
                 }
                 
-                if (currentSide !== player && this.tuzdyk[player] === currentPit) {
-                    this.kazan[player]++;
+                // Проверяем, является ли лунка чьим-либо түздық
+                const isWhiteTuzdykLoop = currentSide === 'black' && this.tuzdyk.white === currentPit;
+                const isBlackTuzdykLoop = currentSide === 'white' && this.tuzdyk.black === currentPit;
+                
+                if (isWhiteTuzdykLoop) {
+                    this.kazan.white++;
+                } else if (isBlackTuzdykLoop) {
+                    this.kazan.black++;
                 } else {
                     this.pits[currentSide][currentPit]++;
                 }
@@ -109,7 +121,11 @@ class GameState {
             }
         }
         
-        if (currentSide === opponent && this.tuzdyk[opponent] !== currentPit) {
+        // Проверка на захват и создание түздық (только если это НЕ түздық)
+        const isAnyTuzdyk = (currentSide === 'black' && this.tuzdyk.white === currentPit) ||
+                           (currentSide === 'white' && this.tuzdyk.black === currentPit);
+        
+        if (currentSide === opponent && !isAnyTuzdyk) {
             const count = this.pits[opponent][currentPit];
             
             if (count === 3 && this.canCreateTuzdyk(player, currentPit)) {

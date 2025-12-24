@@ -389,8 +389,14 @@ class GameState {
                 currentSide = opponent;
             }
             
-            if (currentSide === opponent && this.tuzdyk[player] === currentPit) {
-                this.kazan[player]++;
+            // Проверяем, является ли лунка чьим-либо түздық
+            const isWhiteTuzdyk = currentSide === 'black' && this.tuzdyk.white === currentPit;
+            const isBlackTuzdyk = currentSide === 'white' && this.tuzdyk.black === currentPit;
+            
+            if (isWhiteTuzdyk) {
+                this.kazan.white++;
+            } else if (isBlackTuzdyk) {
+                this.kazan.black++;
             } else {
                 this.pits[currentSide][currentPit]++;
             }
@@ -405,8 +411,14 @@ class GameState {
                     currentSide = currentSide === 'white' ? 'black' : 'white';
                 }
                 
-                if (currentSide !== player && this.tuzdyk[player] === currentPit) {
-                    this.kazan[player]++;
+                // Проверяем, является ли лунка чьим-либо түздық
+                const isWhiteTuzdykLoop = currentSide === 'black' && this.tuzdyk.white === currentPit;
+                const isBlackTuzdykLoop = currentSide === 'white' && this.tuzdyk.black === currentPit;
+                
+                if (isWhiteTuzdykLoop) {
+                    this.kazan.white++;
+                } else if (isBlackTuzdykLoop) {
+                    this.kazan.black++;
                 } else {
                     this.pits[currentSide][currentPit]++;
                 }
@@ -414,7 +426,11 @@ class GameState {
             }
         }
         
-        if (currentSide === opponent && this.tuzdyk[opponent] !== currentPit) {
+        // Проверка на захват и создание түздық (только если это НЕ түздық)
+        const isAnyTuzdyk = (currentSide === 'black' && this.tuzdyk.white === currentPit) ||
+                           (currentSide === 'white' && this.tuzdyk.black === currentPit);
+        
+        if (currentSide === opponent && !isAnyTuzdyk) {
             const count = this.pits[opponent][currentPit];
             
             if (count === 3 && this.canCreateTuzdyk(player, currentPit)) {
@@ -1070,15 +1086,27 @@ class TogyzQumalaq {
             
             await this.delay(this.animationDelay);
             
-            if (nextSide === opponent && this.tuzdyk[player] === nextPit) {
-                this.kazan[player]++;
-                this.renderKazan(player, true);
+            // Проверяем, является ли лунка чьим-либо түздық
+            // Түздық белого находится на стороне черного и наоборот
+            const isWhiteTuzdyk = nextSide === 'black' && this.tuzdyk.white === nextPit;
+            const isBlackTuzdyk = nextSide === 'white' && this.tuzdyk.black === nextPit;
+            
+            if (isWhiteTuzdyk) {
+                this.kazan.white++;
+                this.renderKazan('white', true);
+            } else if (isBlackTuzdyk) {
+                this.kazan.black++;
+                this.renderKazan('black', true);
             } else {
                 this.pits[nextSide][nextPit]++;
                 this.renderBoard();
             }
             
-            if (nextSide === opponent && this.tuzdyk[player] !== nextPit) {
+            // Проверка на захват и создание түздық (только если это НЕ түздық)
+            const nextIsAnyTuzdyk = (nextSide === 'black' && this.tuzdyk.white === nextPit) ||
+                                    (nextSide === 'white' && this.tuzdyk.black === nextPit);
+            
+            if (nextSide === opponent && !nextIsAnyTuzdyk) {
                 const count = this.pits[opponent][nextPit];
                 
                 if (count === 3 && this.state.canCreateTuzdyk(player, nextPit)) {
@@ -1109,10 +1137,22 @@ class TogyzQumalaq {
                     currentSide = currentSide === 'white' ? 'black' : 'white';
                 }
                 
-                if (currentSide !== player && this.tuzdyk[player] === currentPit) {
+                // Проверяем, является ли лунка чьим-либо түздық
+                const isWhiteTuzdykLoop = currentSide === 'black' && this.tuzdyk.white === currentPit;
+                const isBlackTuzdykLoop = currentSide === 'white' && this.tuzdyk.black === currentPit;
+                
+                if (isWhiteTuzdykLoop) {
                     await this.delay(this.animationDelay);
-                    this.kazan[player]++;
-                    this.renderKazan(player, true);
+                    this.kazan.white++;
+                    this.renderKazan('white', true);
+                    stones--;
+                    continue;
+                }
+                
+                if (isBlackTuzdykLoop) {
+                    await this.delay(this.animationDelay);
+                    this.kazan.black++;
+                    this.renderKazan('black', true);
                     stones--;
                     continue;
                 }
@@ -1126,7 +1166,11 @@ class TogyzQumalaq {
             const lastPit = currentPit;
             const lastSide = currentSide;
             
-            if (lastSide === opponent && this.tuzdyk[opponent] !== lastPit) {
+            // Проверка на захват и создание түздық (только если это НЕ түздық)
+            const lastIsAnyTuzdyk = (lastSide === 'black' && this.tuzdyk.white === lastPit) ||
+                                    (lastSide === 'white' && this.tuzdyk.black === lastPit);
+            
+            if (lastSide === opponent && !lastIsAnyTuzdyk) {
                 const count = this.pits[opponent][lastPit];
                 
                 if (count === 3 && this.state.canCreateTuzdyk(player, lastPit)) {
