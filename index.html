@@ -77,6 +77,11 @@
                             <span class="diff-stars">👑</span>
                             <span class="diff-info">100K симуляций</span>
                         </button>
+                        <button class="diff-btn diff-alphazero" data-level="alphazero">
+                            <span class="diff-name">AlphaZero</span>
+                            <span class="diff-stars">🤖</span>
+                            <span class="diff-info">Нейросеть + MCTS</span>
+                        </button>
                     </div>
                 </div>
 
@@ -190,6 +195,8 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    <script src="alphazero-inference.js"></script>
     <script src="game.js"></script>
 </body>
 </html>

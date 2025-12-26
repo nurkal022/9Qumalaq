@@ -21,3 +21,14 @@ ENV/
 .DS_Store
 Thumbs.db
 
+# Training logs (keep checkpoints, ignore logs)
+alphazero/*.txt
+alphazero/*.log
+alphazero/training_log.txt
+alphazero/test_*.txt
+
+# Keep checkpoints and models (needed for continuation)
+# alphazero/checkpoints/
+# browser_model/
+# model.onnx
+

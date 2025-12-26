@@ -891,6 +891,214 @@ class MinimaxAI {
     }
 }
 
+// ==================== ALPHAZERO AI ====================
+class AlphaZeroAI {
+    constructor(simulations = 400, timeLimit = 5000) {
+        this.simulations = simulations;
+        this.timeLimit = timeLimit;
+        this.nn = null;
+        this.loading = false;
+        this.loaded = false;
+        this.c_puct = 1.5;
+        this.dirichletAlpha = 0.3;
+        this.dirichletEps = 0.25;
+    }
+    
+    async loadModel() {
+        if (this.loaded || this.loading) return true;
+        this.loading = true;
+        
+        try {
+            if (typeof AlphaZeroNN === 'undefined') {
+                console.error('AlphaZeroNN not loaded! Make sure alphazero-inference.js is included.');
+                this.loading = false;
+                return false;
+            }
+            
+            this.nn = new AlphaZeroNN();
+            await this.nn.load('model.onnx', 'metadata.json');
+            this.loaded = true;
+            this.loading = false;
+            console.log('[AlphaZero] Model loaded successfully');
+            return true;
+        } catch (e) {
+            console.error('[AlphaZero] Failed to load model:', e);
+            this.loading = false;
+            return false;
+        }
+    }
+    
+    async getBestMove(state, player) {
+        // Ensure model is loaded
+        if (!this.loaded) {
+            const loaded = await this.loadModel();
+            if (!loaded) {
+                // Fallback to random
+                const moves = state.getValidMoves(player);
+                return moves[Math.floor(Math.random() * moves.length)];
+            }
+        }
+        
+        try {
+            // Run BatchMCTS-style search (same as training)
+            const mctsPolicy = await this.runBatchMCTS(state, player);
+            
+            // Select best move (argmax)
+            let bestMove = 0;
+            let bestVisits = -1;
+            
+            for (let i = 0; i < 9; i++) {
+                if (mctsPolicy[i] > bestVisits) {
+                    bestVisits = mctsPolicy[i];
+                    bestMove = i;
+                }
+            }
+            
+            console.log(`[AlphaZero] Move: ${bestMove + 1}, visits: ${bestVisits}`);
+            
+            return bestMove;
+        } catch (e) {
+            console.error('[AlphaZero] Error:', e);
+            // Fallback
+            const moves = state.getValidMoves(player);
+            return moves[Math.floor(Math.random() * moves.length)];
+        }
+    }
+    
+    encodeStateForNN(state) {
+        // Encode state from currentPlayer's perspective (same as training)
+        return {
+            pits: {
+                white: [...state.pits.white],
+                black: [...state.pits.black]
+            },
+            kazan: { 
+                white: state.kazan.white, 
+                black: state.kazan.black 
+            },
+            tuzdyk: { 
+                white: state.tuzdyk.white, 
+                black: state.tuzdyk.black 
+            },
+            currentPlayer: state.currentPlayer
+        };
+    }
+    
+    // Generate Dirichlet noise
+    dirichletNoise(n) {
+        const alpha = this.dirichletAlpha;
+        // Simple gamma-based Dirichlet
+        const samples = [];
+        let sum = 0;
+        for (let i = 0; i < n; i++) {
+            // Approximate gamma(alpha) using transformation
+            let x = 0;
+            for (let j = 0; j < Math.ceil(alpha); j++) {
+                x -= Math.log(Math.random());
+            }
+            samples.push(x);
+            sum += x;
+        }
+        return samples.map(x => x / sum);
+    }
+    
+    async runBatchMCTS(state, player) {
+        // BatchMCTS-style search (matches training exactly)
+        const validMoves = state.getValidMoves(player);
+        if (validMoves.length === 0) return new Array(9).fill(0);
+        
+        // Get root policy from neural network
+        const rootEncoded = this.encodeStateForNN(state);
+        const { policy: rawPolicy } = await this.nn.predict(rootEncoded);
+        
+        // Create valid mask
+        const validMask = new Array(9).fill(0);
+        for (const m of validMoves) validMask[m] = 1;
+        
+        // Mask and normalize policy
+        let policy = new Array(9).fill(0);
+        let policySum = 0;
+        for (let i = 0; i < 9; i++) {
+            policy[i] = rawPolicy[i] * validMask[i];
+            policySum += policy[i];
+        }
+        if (policySum > 0) {
+            policy = policy.map(p => p / policySum);
+        } else {
+            // Uniform over valid moves
+            const numValid = validMoves.length;
+            for (const m of validMoves) policy[m] = 1.0 / numValid;
+        }
+        
+        // Add Dirichlet noise at root (for exploration)
+        const noise = this.dirichletNoise(9);
+        for (let i = 0; i < 9; i++) {
+            policy[i] = (1 - this.dirichletEps) * policy[i] + this.dirichletEps * noise[i] * validMask[i];
+        }
+        // Renormalize
+        policySum = policy.reduce((a, b) => a + b, 0);
+        if (policySum > 0) policy = policy.map(p => p / policySum);
+        
+        // Initialize statistics
+        const visitCounts = new Array(9).fill(0);
+        const totalValues = new Array(9).fill(0);
+        
+        const startTime = Date.now();
+        
+        // Run simulations
+        for (let sim = 0; sim < this.simulations; sim++) {
+            if (Date.now() - startTime > this.timeLimit) break;
+            
+            // Select action using PUCT
+            const sqrtTotal = Math.sqrt(visitCounts.reduce((a, b) => a + b, 0) + 1);
+            
+            let bestAction = validMoves[0];
+            let bestUCB = -Infinity;
+            
+            for (const action of validMoves) {
+                const qValue = visitCounts[action] > 0 ? totalValues[action] / visitCounts[action] : 0;
+                const ucb = qValue + this.c_puct * policy[action] * sqrtTotal / (1 + visitCounts[action]);
+                
+                if (ucb > bestUCB) {
+                    bestUCB = ucb;
+                    bestAction = action;
+                }
+            }
+            
+            // Simulate move
+            const simState = state.clone();
+            simState.makeMove(bestAction);
+            
+            // Evaluate leaf
+            let value;
+            if (simState.isGameOver()) {
+                const winner = simState.getWinner();
+                if (winner === 2 || winner === 'draw') {
+                    value = 0.0;
+                } else if (winner === player) {
+                    value = 1.0;
+                } else {
+                    value = -1.0;
+                }
+            } else {
+                // Neural network evaluation
+                const leafEncoded = this.encodeStateForNN(simState);
+                const { value: nnValue } = await this.nn.predict(leafEncoded);
+                // Flip value - NN returns from simState.currentPlayer's perspective
+                // We need it from root player's perspective
+                value = -nnValue;
+            }
+            
+            // Update statistics
+            visitCounts[bestAction]++;
+            totalValues[bestAction] += value;
+        }
+        
+        // Return visit counts (not normalized - matches training)
+        return visitCounts;
+    }
+}
+
 // ==================== AI DIFFICULTY LEVELS ====================
 const AI_LEVELS = {
     easy: {
@@ -931,6 +1139,12 @@ const AI_LEVELS = {
         type: 'parallel-mcts',
         simulations: 100000,
         timeLimit: 30000
+    },
+    alphazero: {
+        name: 'AlphaZero',
+        type: 'alphazero',
+        simulations: 200,  // Reduced for faster browser response
+        timeLimit: 10000
     }
 };
 
@@ -946,6 +1160,13 @@ class TogyzQumalaq {
         this.animationDelay = 60;
         
         this.ai = this.createAI(this.aiLevel);
+        
+        // Preload AlphaZero model if needed
+        if (this.aiLevel === 'alphazero' && this.ai.loadModel) {
+            this.ai.loadModel().catch(e => {
+                console.warn('[AlphaZero] Preload failed, will load on first move:', e);
+            });
+        }
         
         this.initUI();
         this.updateModeButton();
@@ -969,7 +1190,9 @@ class TogyzQumalaq {
     
     createAI(level) {
         const config = AI_LEVELS[level];
-        if (config.type === 'parallel-mcts') {
+        if (config.type === 'alphazero') {
+            return new AlphaZeroAI(config.simulations, config.timeLimit);
+        } else if (config.type === 'parallel-mcts') {
             return new ParallelMCTSAI(config.simulations, config.timeLimit);
         } else if (config.type === 'mcts') {
             return new MCTSAI(config.simulations, config.timeLimit);
@@ -1038,6 +1261,13 @@ class TogyzQumalaq {
         const nextIndex = (currentIndex + 1) % levels.length;
         this.aiLevel = levels[nextIndex];
         this.ai = this.createAI(this.aiLevel);
+        
+        // Preload AlphaZero model if needed
+        if (this.aiLevel === 'alphazero' && this.ai.loadModel) {
+            this.ai.loadModel().catch(e => {
+                console.warn('[AlphaZero] Preload failed, will load on first move:', e);
+            });
+        }
         
         const btn = document.getElementById('difficultyBtn');
         if (btn) {
@@ -1281,7 +1511,9 @@ class TogyzQumalaq {
         
         // Show thinking indicator
         const config = AI_LEVELS[this.aiLevel];
-        if (config.type === 'parallel-mcts') {
+        if (config.type === 'alphazero') {
+            document.getElementById('turnText').textContent = 'AI ойлануда (AlphaZero)... 🤖';
+        } else if (config.type === 'parallel-mcts') {
             document.getElementById('turnText').textContent = 'AI ойлануда (Супер)... 🧠';
         } else {
             document.getElementById('turnText').textContent = 'AI ойлануда...';

@@ -237,6 +237,40 @@ body {
     box-shadow: 0 0 25px rgba(124, 77, 255, 0.3);
 }
 
+.diff-alphazero {
+    grid-column: span 3;
+    background: linear-gradient(145deg, #0D47A1, #1565C0);
+    border-color: #42A5F5;
+    position: relative;
+}
+
+.diff-alphazero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+}
+
+.diff-alphazero:hover {
+    box-shadow: 0 5px 20px rgba(66, 165, 245, 0.5);
+    transform: translateY(-2px);
+}
+
+.diff-alphazero.active {
+    border-color: #64B5F6;
+    background: linear-gradient(145deg, #1565C0, #0D47A1);
+    box-shadow: 0 0 30px rgba(66, 165, 245, 0.4);
+}
+
 .start-game-btn {
     width: 100%;
     padding: 18px 30px;

@@ -1,0 +1,1892 @@
+
+pytorch2.11.0.dev20251224+cu128:Ì¿
+Ñ
+
+state
+conv_input.weight
+conv_input.biasgetitemnode_Conv_102"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†Jß
+	namespaceô: model.TogyzNet/bn_input: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJì
+pkg.torch.onnx.class_hierarchyq['model.TogyzNet', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']J®
+pkg.torch.onnx.fx_nodeç%_native_batch_norm_legit_no_training : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d, %p_bn_input_weight, %p_bn_input_bias, %b_bn_input_running_mean, %b_bn_input_running_var, 0.1, 1e-05), kwargs = {})JV
+pkg.torch.onnx.name_scopes8['', 'bn_input', '_native_batch_norm_legit_no_training']J„
+pkg.torch.onnx.stack_traceƒFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 87, in forward
+    x = F.relu(self.bn_input(self.conv_input(x)))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+ò
+getitemrelu	node_relu"ReluJ5
+	namespace(: model.TogyzNet/relu: aten.relu.defaultJI
+pkg.torch.onnx.class_hierarchy'['model.TogyzNet', 'aten.relu.default']JÑ
+pkg.torch.onnx.fx_nodej%relu : [num_users=2] = call_function[target=torch.ops.aten.relu.default](args = (%getitem,), kwargs = {})J*
+pkg.torch.onnx.name_scopes['', 'relu']J¿
+pkg.torch.onnx.stack_trace°File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 87, in forward
+    x = F.relu(self.bn_input(self.conv_input(x)))
+ê
+relu
+res_blocks.0.conv1.weight
+res_blocks.0.conv1.bias	getitem_3node_Conv_103"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J”
+	namespace≈: model.TogyzNet/res_blocks.0: model.ResidualBlock/res_blocks.0.bn1: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_1: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JÃ
+pkg.torch.onnx.fx_node±%_native_batch_norm_legit_no_training_1 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_1, %p_res_blocks_0_bn1_weight, %p_res_blocks_0_bn1_bias, %b_res_blocks_0_bn1_running_mean, %b_res_blocks_0_bn1_running_var, 0.1, 1e-05), kwargs = {})Jp
+pkg.torch.onnx.name_scopesR['', 'res_blocks.0', 'res_blocks.0.bn1', '_native_batch_norm_legit_no_training_1']J‹
+pkg.torch.onnx.stack_traceΩFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Ë
+	getitem_3relu_1node_relu_1"ReluJY
+	namespaceL: model.TogyzNet/res_blocks.0: model.ResidualBlock/relu_1: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Jà
+pkg.torch.onnx.fx_noden%relu_1 : [num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%getitem_3,), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'res_blocks.0', 'relu_1']Jπ
+pkg.torch.onnx.stack_traceöFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+ä
+relu_1
+res_blocks.0.conv2.weight
+res_blocks.0.conv2.bias	getitem_6node_Conv_104"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J”
+	namespace≈: model.TogyzNet/res_blocks.0: model.ResidualBlock/res_blocks.0.bn2: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_2: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JÃ
+pkg.torch.onnx.fx_node±%_native_batch_norm_legit_no_training_2 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_2, %p_res_blocks_0_bn2_weight, %p_res_blocks_0_bn2_bias, %b_res_blocks_0_bn2_running_mean, %b_res_blocks_0_bn2_running_var, 0.1, 1e-05), kwargs = {})Jp
+pkg.torch.onnx.name_scopesR['', 'res_blocks.0', 'res_blocks.0.bn2', '_native_batch_norm_legit_no_training_2']J‘
+pkg.torch.onnx.stack_traceµFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 26, in forward
+    x = self.bn2(self.conv2(x))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+⁄
+	getitem_6
+reluadd_32node_add_32"AddJW
+	namespaceJ: model.TogyzNet/res_blocks.0: model.ResidualBlock/add_32: aten.add.TensorJ^
+pkg.torch.onnx.class_hierarchy<['model.TogyzNet', 'model.ResidualBlock', 'aten.add.Tensor']Jå
+pkg.torch.onnx.fx_noder%add_32 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%getitem_6, %relu), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'res_blocks.0', 'add_32']J¶
+pkg.torch.onnx.stack_traceáFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 27, in forward
+    x = x + residual
+Ã
+add_32relu_2node_relu_2"ReluJY
+	namespaceL: model.TogyzNet/res_blocks.0: model.ResidualBlock/relu_2: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']JÖ
+pkg.torch.onnx.fx_nodek%relu_2 : [num_users=2] = call_function[target=torch.ops.aten.relu.default](args = (%add_32,), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'res_blocks.0', 'relu_2']J£
+pkg.torch.onnx.stack_traceÑFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 28, in forward
+    x = F.relu(x)
+í
+relu_2
+res_blocks.1.conv1.weight
+res_blocks.1.conv1.bias	getitem_9node_Conv_105"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J”
+	namespace≈: model.TogyzNet/res_blocks.1: model.ResidualBlock/res_blocks.1.bn1: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_3: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JÃ
+pkg.torch.onnx.fx_node±%_native_batch_norm_legit_no_training_3 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_3, %p_res_blocks_1_bn1_weight, %p_res_blocks_1_bn1_bias, %b_res_blocks_1_bn1_running_mean, %b_res_blocks_1_bn1_running_var, 0.1, 1e-05), kwargs = {})Jp
+pkg.torch.onnx.name_scopesR['', 'res_blocks.1', 'res_blocks.1.bn1', '_native_batch_norm_legit_no_training_3']J‹
+pkg.torch.onnx.stack_traceΩFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Ë
+	getitem_9relu_3node_relu_3"ReluJY
+	namespaceL: model.TogyzNet/res_blocks.1: model.ResidualBlock/relu_3: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Jà
+pkg.torch.onnx.fx_noden%relu_3 : [num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%getitem_9,), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'res_blocks.1', 'relu_3']Jπ
+pkg.torch.onnx.stack_traceöFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+ã
+relu_3
+res_blocks.1.conv2.weight
+res_blocks.1.conv2.bias
+getitem_12node_Conv_106"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J”
+	namespace≈: model.TogyzNet/res_blocks.1: model.ResidualBlock/res_blocks.1.bn2: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_4: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JÃ
+pkg.torch.onnx.fx_node±%_native_batch_norm_legit_no_training_4 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_4, %p_res_blocks_1_bn2_weight, %p_res_blocks_1_bn2_bias, %b_res_blocks_1_bn2_running_mean, %b_res_blocks_1_bn2_running_var, 0.1, 1e-05), kwargs = {})Jp
+pkg.torch.onnx.name_scopesR['', 'res_blocks.1', 'res_blocks.1.bn2', '_native_batch_norm_legit_no_training_4']J‘
+pkg.torch.onnx.stack_traceµFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 26, in forward
+    x = self.bn2(self.conv2(x))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+‡
+
+getitem_12
+relu_2add_61node_add_61"AddJW
+	namespaceJ: model.TogyzNet/res_blocks.1: model.ResidualBlock/add_61: aten.add.TensorJ^
+pkg.torch.onnx.class_hierarchy<['model.TogyzNet', 'model.ResidualBlock', 'aten.add.Tensor']Jè
+pkg.torch.onnx.fx_nodeu%add_61 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%getitem_12, %relu_2), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'res_blocks.1', 'add_61']J¶
+pkg.torch.onnx.stack_traceáFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 27, in forward
+    x = x + residual
+Ã
+add_61relu_4node_relu_4"ReluJY
+	namespaceL: model.TogyzNet/res_blocks.1: model.ResidualBlock/relu_4: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']JÖ
+pkg.torch.onnx.fx_nodek%relu_4 : [num_users=2] = call_function[target=torch.ops.aten.relu.default](args = (%add_61,), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'res_blocks.1', 'relu_4']J£
+pkg.torch.onnx.stack_traceÑFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 28, in forward
+    x = F.relu(x)
+ì
+relu_4
+res_blocks.2.conv1.weight
+res_blocks.2.conv1.bias
+getitem_15node_Conv_107"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J”
+	namespace≈: model.TogyzNet/res_blocks.2: model.ResidualBlock/res_blocks.2.bn1: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_5: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JÃ
+pkg.torch.onnx.fx_node±%_native_batch_norm_legit_no_training_5 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_5, %p_res_blocks_2_bn1_weight, %p_res_blocks_2_bn1_bias, %b_res_blocks_2_bn1_running_mean, %b_res_blocks_2_bn1_running_var, 0.1, 1e-05), kwargs = {})Jp
+pkg.torch.onnx.name_scopesR['', 'res_blocks.2', 'res_blocks.2.bn1', '_native_batch_norm_legit_no_training_5']J‹
+pkg.torch.onnx.stack_traceΩFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Í
+
+getitem_15relu_5node_relu_5"ReluJY
+	namespaceL: model.TogyzNet/res_blocks.2: model.ResidualBlock/relu_5: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Jâ
+pkg.torch.onnx.fx_nodeo%relu_5 : [num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%getitem_15,), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'res_blocks.2', 'relu_5']Jπ
+pkg.torch.onnx.stack_traceöFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+ã
+relu_5
+res_blocks.2.conv2.weight
+res_blocks.2.conv2.bias
+getitem_18node_Conv_108"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J”
+	namespace≈: model.TogyzNet/res_blocks.2: model.ResidualBlock/res_blocks.2.bn2: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_6: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JÃ
+pkg.torch.onnx.fx_node±%_native_batch_norm_legit_no_training_6 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_6, %p_res_blocks_2_bn2_weight, %p_res_blocks_2_bn2_bias, %b_res_blocks_2_bn2_running_mean, %b_res_blocks_2_bn2_running_var, 0.1, 1e-05), kwargs = {})Jp
+pkg.torch.onnx.name_scopesR['', 'res_blocks.2', 'res_blocks.2.bn2', '_native_batch_norm_legit_no_training_6']J‘
+pkg.torch.onnx.stack_traceµFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 26, in forward
+    x = self.bn2(self.conv2(x))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+‡
+
+getitem_18
+relu_4add_90node_add_90"AddJW
+	namespaceJ: model.TogyzNet/res_blocks.2: model.ResidualBlock/add_90: aten.add.TensorJ^
+pkg.torch.onnx.class_hierarchy<['model.TogyzNet', 'model.ResidualBlock', 'aten.add.Tensor']Jè
+pkg.torch.onnx.fx_nodeu%add_90 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%getitem_18, %relu_4), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'res_blocks.2', 'add_90']J¶
+pkg.torch.onnx.stack_traceáFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 27, in forward
+    x = x + residual
+Ã
+add_90relu_6node_relu_6"ReluJY
+	namespaceL: model.TogyzNet/res_blocks.2: model.ResidualBlock/relu_6: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']JÖ
+pkg.torch.onnx.fx_nodek%relu_6 : [num_users=2] = call_function[target=torch.ops.aten.relu.default](args = (%add_90,), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'res_blocks.2', 'relu_6']J£
+pkg.torch.onnx.stack_traceÑFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 28, in forward
+    x = F.relu(x)
+ì
+relu_6
+res_blocks.3.conv1.weight
+res_blocks.3.conv1.bias
+getitem_21node_Conv_109"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J”
+	namespace≈: model.TogyzNet/res_blocks.3: model.ResidualBlock/res_blocks.3.bn1: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_7: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JÃ
+pkg.torch.onnx.fx_node±%_native_batch_norm_legit_no_training_7 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_7, %p_res_blocks_3_bn1_weight, %p_res_blocks_3_bn1_bias, %b_res_blocks_3_bn1_running_mean, %b_res_blocks_3_bn1_running_var, 0.1, 1e-05), kwargs = {})Jp
+pkg.torch.onnx.name_scopesR['', 'res_blocks.3', 'res_blocks.3.bn1', '_native_batch_norm_legit_no_training_7']J‹
+pkg.torch.onnx.stack_traceΩFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Í
+
+getitem_21relu_7node_relu_7"ReluJY
+	namespaceL: model.TogyzNet/res_blocks.3: model.ResidualBlock/relu_7: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Jâ
+pkg.torch.onnx.fx_nodeo%relu_7 : [num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%getitem_21,), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'res_blocks.3', 'relu_7']Jπ
+pkg.torch.onnx.stack_traceöFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+ã
+relu_7
+res_blocks.3.conv2.weight
+res_blocks.3.conv2.bias
+getitem_24node_Conv_110"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J”
+	namespace≈: model.TogyzNet/res_blocks.3: model.ResidualBlock/res_blocks.3.bn2: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_8: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JÃ
+pkg.torch.onnx.fx_node±%_native_batch_norm_legit_no_training_8 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_8, %p_res_blocks_3_bn2_weight, %p_res_blocks_3_bn2_bias, %b_res_blocks_3_bn2_running_mean, %b_res_blocks_3_bn2_running_var, 0.1, 1e-05), kwargs = {})Jp
+pkg.torch.onnx.name_scopesR['', 'res_blocks.3', 'res_blocks.3.bn2', '_native_batch_norm_legit_no_training_8']J‘
+pkg.torch.onnx.stack_traceµFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 26, in forward
+    x = self.bn2(self.conv2(x))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Â
+
+getitem_24
+relu_6add_119node_add_119"AddJX
+	namespaceK: model.TogyzNet/res_blocks.3: model.ResidualBlock/add_119: aten.add.TensorJ^
+pkg.torch.onnx.class_hierarchy<['model.TogyzNet', 'model.ResidualBlock', 'aten.add.Tensor']Jê
+pkg.torch.onnx.fx_nodev%add_119 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%getitem_24, %relu_6), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.3', 'add_119']J¶
+pkg.torch.onnx.stack_traceáFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 27, in forward
+    x = x + residual
+Œ
+add_119relu_8node_relu_8"ReluJY
+	namespaceL: model.TogyzNet/res_blocks.3: model.ResidualBlock/relu_8: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']JÜ
+pkg.torch.onnx.fx_nodel%relu_8 : [num_users=2] = call_function[target=torch.ops.aten.relu.default](args = (%add_119,), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'res_blocks.3', 'relu_8']J£
+pkg.torch.onnx.stack_traceÑFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 28, in forward
+    x = F.relu(x)
+ì
+relu_8
+res_blocks.4.conv1.weight
+res_blocks.4.conv1.bias
+getitem_27node_Conv_111"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J”
+	namespace≈: model.TogyzNet/res_blocks.4: model.ResidualBlock/res_blocks.4.bn1: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_9: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JÃ
+pkg.torch.onnx.fx_node±%_native_batch_norm_legit_no_training_9 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_9, %p_res_blocks_4_bn1_weight, %p_res_blocks_4_bn1_bias, %b_res_blocks_4_bn1_running_mean, %b_res_blocks_4_bn1_running_var, 0.1, 1e-05), kwargs = {})Jp
+pkg.torch.onnx.name_scopesR['', 'res_blocks.4', 'res_blocks.4.bn1', '_native_batch_norm_legit_no_training_9']J‹
+pkg.torch.onnx.stack_traceΩFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Í
+
+getitem_27relu_9node_relu_9"ReluJY
+	namespaceL: model.TogyzNet/res_blocks.4: model.ResidualBlock/relu_9: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Jâ
+pkg.torch.onnx.fx_nodeo%relu_9 : [num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%getitem_27,), kwargs = {})J<
+pkg.torch.onnx.name_scopes['', 'res_blocks.4', 'relu_9']Jπ
+pkg.torch.onnx.stack_traceöFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+è
+relu_9
+res_blocks.4.conv2.weight
+res_blocks.4.conv2.bias
+getitem_30node_Conv_112"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J‘
+	namespace∆: model.TogyzNet/res_blocks.4: model.ResidualBlock/res_blocks.4.bn2: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_10: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JŒ
+pkg.torch.onnx.fx_node≥%_native_batch_norm_legit_no_training_10 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_10, %p_res_blocks_4_bn2_weight, %p_res_blocks_4_bn2_bias, %b_res_blocks_4_bn2_running_mean, %b_res_blocks_4_bn2_running_var, 0.1, 1e-05), kwargs = {})Jq
+pkg.torch.onnx.name_scopesS['', 'res_blocks.4', 'res_blocks.4.bn2', '_native_batch_norm_legit_no_training_10']J‘
+pkg.torch.onnx.stack_traceµFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 26, in forward
+    x = self.bn2(self.conv2(x))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Â
+
+getitem_30
+relu_8add_148node_add_148"AddJX
+	namespaceK: model.TogyzNet/res_blocks.4: model.ResidualBlock/add_148: aten.add.TensorJ^
+pkg.torch.onnx.class_hierarchy<['model.TogyzNet', 'model.ResidualBlock', 'aten.add.Tensor']Jê
+pkg.torch.onnx.fx_nodev%add_148 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%getitem_30, %relu_8), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.4', 'add_148']J¶
+pkg.torch.onnx.stack_traceáFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 27, in forward
+    x = x + residual
+”
+add_148relu_10node_relu_10"ReluJZ
+	namespaceM: model.TogyzNet/res_blocks.4: model.ResidualBlock/relu_10: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Já
+pkg.torch.onnx.fx_nodem%relu_10 : [num_users=2] = call_function[target=torch.ops.aten.relu.default](args = (%add_148,), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.4', 'relu_10']J£
+pkg.torch.onnx.stack_traceÑFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 28, in forward
+    x = F.relu(x)
+ò
+relu_10
+res_blocks.5.conv1.weight
+res_blocks.5.conv1.bias
+getitem_33node_Conv_113"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J‘
+	namespace∆: model.TogyzNet/res_blocks.5: model.ResidualBlock/res_blocks.5.bn1: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_11: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JŒ
+pkg.torch.onnx.fx_node≥%_native_batch_norm_legit_no_training_11 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_11, %p_res_blocks_5_bn1_weight, %p_res_blocks_5_bn1_bias, %b_res_blocks_5_bn1_running_mean, %b_res_blocks_5_bn1_running_var, 0.1, 1e-05), kwargs = {})Jq
+pkg.torch.onnx.name_scopesS['', 'res_blocks.5', 'res_blocks.5.bn1', '_native_batch_norm_legit_no_training_11']J‹
+pkg.torch.onnx.stack_traceΩFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Ô
+
+getitem_33relu_11node_relu_11"ReluJZ
+	namespaceM: model.TogyzNet/res_blocks.5: model.ResidualBlock/relu_11: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Jä
+pkg.torch.onnx.fx_nodep%relu_11 : [num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%getitem_33,), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.5', 'relu_11']Jπ
+pkg.torch.onnx.stack_traceöFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+ê
+relu_11
+res_blocks.5.conv2.weight
+res_blocks.5.conv2.bias
+getitem_36node_Conv_114"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J‘
+	namespace∆: model.TogyzNet/res_blocks.5: model.ResidualBlock/res_blocks.5.bn2: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_12: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JŒ
+pkg.torch.onnx.fx_node≥%_native_batch_norm_legit_no_training_12 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_12, %p_res_blocks_5_bn2_weight, %p_res_blocks_5_bn2_bias, %b_res_blocks_5_bn2_running_mean, %b_res_blocks_5_bn2_running_var, 0.1, 1e-05), kwargs = {})Jq
+pkg.torch.onnx.name_scopesS['', 'res_blocks.5', 'res_blocks.5.bn2', '_native_batch_norm_legit_no_training_12']J‘
+pkg.torch.onnx.stack_traceµFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 26, in forward
+    x = self.bn2(self.conv2(x))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Á
+
+getitem_36
+relu_10add_177node_add_177"AddJX
+	namespaceK: model.TogyzNet/res_blocks.5: model.ResidualBlock/add_177: aten.add.TensorJ^
+pkg.torch.onnx.class_hierarchy<['model.TogyzNet', 'model.ResidualBlock', 'aten.add.Tensor']Jë
+pkg.torch.onnx.fx_nodew%add_177 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%getitem_36, %relu_10), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.5', 'add_177']J¶
+pkg.torch.onnx.stack_traceáFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 27, in forward
+    x = x + residual
+”
+add_177relu_12node_relu_12"ReluJZ
+	namespaceM: model.TogyzNet/res_blocks.5: model.ResidualBlock/relu_12: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Já
+pkg.torch.onnx.fx_nodem%relu_12 : [num_users=2] = call_function[target=torch.ops.aten.relu.default](args = (%add_177,), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.5', 'relu_12']J£
+pkg.torch.onnx.stack_traceÑFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 28, in forward
+    x = F.relu(x)
+ò
+relu_12
+res_blocks.6.conv1.weight
+res_blocks.6.conv1.bias
+getitem_39node_Conv_115"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J‘
+	namespace∆: model.TogyzNet/res_blocks.6: model.ResidualBlock/res_blocks.6.bn1: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_13: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JŒ
+pkg.torch.onnx.fx_node≥%_native_batch_norm_legit_no_training_13 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_13, %p_res_blocks_6_bn1_weight, %p_res_blocks_6_bn1_bias, %b_res_blocks_6_bn1_running_mean, %b_res_blocks_6_bn1_running_var, 0.1, 1e-05), kwargs = {})Jq
+pkg.torch.onnx.name_scopesS['', 'res_blocks.6', 'res_blocks.6.bn1', '_native_batch_norm_legit_no_training_13']J‹
+pkg.torch.onnx.stack_traceΩFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Ô
+
+getitem_39relu_13node_relu_13"ReluJZ
+	namespaceM: model.TogyzNet/res_blocks.6: model.ResidualBlock/relu_13: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Jä
+pkg.torch.onnx.fx_nodep%relu_13 : [num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%getitem_39,), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.6', 'relu_13']Jπ
+pkg.torch.onnx.stack_traceöFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+ê
+relu_13
+res_blocks.6.conv2.weight
+res_blocks.6.conv2.bias
+getitem_42node_Conv_116"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J‘
+	namespace∆: model.TogyzNet/res_blocks.6: model.ResidualBlock/res_blocks.6.bn2: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_14: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JŒ
+pkg.torch.onnx.fx_node≥%_native_batch_norm_legit_no_training_14 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_14, %p_res_blocks_6_bn2_weight, %p_res_blocks_6_bn2_bias, %b_res_blocks_6_bn2_running_mean, %b_res_blocks_6_bn2_running_var, 0.1, 1e-05), kwargs = {})Jq
+pkg.torch.onnx.name_scopesS['', 'res_blocks.6', 'res_blocks.6.bn2', '_native_batch_norm_legit_no_training_14']J‘
+pkg.torch.onnx.stack_traceµFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 26, in forward
+    x = self.bn2(self.conv2(x))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Á
+
+getitem_42
+relu_12add_206node_add_206"AddJX
+	namespaceK: model.TogyzNet/res_blocks.6: model.ResidualBlock/add_206: aten.add.TensorJ^
+pkg.torch.onnx.class_hierarchy<['model.TogyzNet', 'model.ResidualBlock', 'aten.add.Tensor']Jë
+pkg.torch.onnx.fx_nodew%add_206 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%getitem_42, %relu_12), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.6', 'add_206']J¶
+pkg.torch.onnx.stack_traceáFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 27, in forward
+    x = x + residual
+”
+add_206relu_14node_relu_14"ReluJZ
+	namespaceM: model.TogyzNet/res_blocks.6: model.ResidualBlock/relu_14: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Já
+pkg.torch.onnx.fx_nodem%relu_14 : [num_users=2] = call_function[target=torch.ops.aten.relu.default](args = (%add_206,), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.6', 'relu_14']J£
+pkg.torch.onnx.stack_traceÑFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 28, in forward
+    x = F.relu(x)
+ò
+relu_14
+res_blocks.7.conv1.weight
+res_blocks.7.conv1.bias
+getitem_45node_Conv_117"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J‘
+	namespace∆: model.TogyzNet/res_blocks.7: model.ResidualBlock/res_blocks.7.bn1: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_15: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JŒ
+pkg.torch.onnx.fx_node≥%_native_batch_norm_legit_no_training_15 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_15, %p_res_blocks_7_bn1_weight, %p_res_blocks_7_bn1_bias, %b_res_blocks_7_bn1_running_mean, %b_res_blocks_7_bn1_running_var, 0.1, 1e-05), kwargs = {})Jq
+pkg.torch.onnx.name_scopesS['', 'res_blocks.7', 'res_blocks.7.bn1', '_native_batch_norm_legit_no_training_15']J‹
+pkg.torch.onnx.stack_traceΩFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Ô
+
+getitem_45relu_15node_relu_15"ReluJZ
+	namespaceM: model.TogyzNet/res_blocks.7: model.ResidualBlock/relu_15: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Jä
+pkg.torch.onnx.fx_nodep%relu_15 : [num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%getitem_45,), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.7', 'relu_15']Jπ
+pkg.torch.onnx.stack_traceöFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+ê
+relu_15
+res_blocks.7.conv2.weight
+res_blocks.7.conv2.bias
+getitem_48node_Conv_118"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J‘
+	namespace∆: model.TogyzNet/res_blocks.7: model.ResidualBlock/res_blocks.7.bn2: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_16: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JŒ
+pkg.torch.onnx.fx_node≥%_native_batch_norm_legit_no_training_16 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_16, %p_res_blocks_7_bn2_weight, %p_res_blocks_7_bn2_bias, %b_res_blocks_7_bn2_running_mean, %b_res_blocks_7_bn2_running_var, 0.1, 1e-05), kwargs = {})Jq
+pkg.torch.onnx.name_scopesS['', 'res_blocks.7', 'res_blocks.7.bn2', '_native_batch_norm_legit_no_training_16']J‘
+pkg.torch.onnx.stack_traceµFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 26, in forward
+    x = self.bn2(self.conv2(x))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Á
+
+getitem_48
+relu_14add_235node_add_235"AddJX
+	namespaceK: model.TogyzNet/res_blocks.7: model.ResidualBlock/add_235: aten.add.TensorJ^
+pkg.torch.onnx.class_hierarchy<['model.TogyzNet', 'model.ResidualBlock', 'aten.add.Tensor']Jë
+pkg.torch.onnx.fx_nodew%add_235 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%getitem_48, %relu_14), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.7', 'add_235']J¶
+pkg.torch.onnx.stack_traceáFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 27, in forward
+    x = x + residual
+”
+add_235relu_16node_relu_16"ReluJZ
+	namespaceM: model.TogyzNet/res_blocks.7: model.ResidualBlock/relu_16: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Já
+pkg.torch.onnx.fx_nodem%relu_16 : [num_users=2] = call_function[target=torch.ops.aten.relu.default](args = (%add_235,), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.7', 'relu_16']J£
+pkg.torch.onnx.stack_traceÑFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 28, in forward
+    x = F.relu(x)
+ò
+relu_16
+res_blocks.8.conv1.weight
+res_blocks.8.conv1.bias
+getitem_51node_Conv_119"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J‘
+	namespace∆: model.TogyzNet/res_blocks.8: model.ResidualBlock/res_blocks.8.bn1: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_17: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JŒ
+pkg.torch.onnx.fx_node≥%_native_batch_norm_legit_no_training_17 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_17, %p_res_blocks_8_bn1_weight, %p_res_blocks_8_bn1_bias, %b_res_blocks_8_bn1_running_mean, %b_res_blocks_8_bn1_running_var, 0.1, 1e-05), kwargs = {})Jq
+pkg.torch.onnx.name_scopesS['', 'res_blocks.8', 'res_blocks.8.bn1', '_native_batch_norm_legit_no_training_17']J‹
+pkg.torch.onnx.stack_traceΩFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Ô
+
+getitem_51relu_17node_relu_17"ReluJZ
+	namespaceM: model.TogyzNet/res_blocks.8: model.ResidualBlock/relu_17: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Jä
+pkg.torch.onnx.fx_nodep%relu_17 : [num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%getitem_51,), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.8', 'relu_17']Jπ
+pkg.torch.onnx.stack_traceöFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+ê
+relu_17
+res_blocks.8.conv2.weight
+res_blocks.8.conv2.bias
+getitem_54node_Conv_120"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J‘
+	namespace∆: model.TogyzNet/res_blocks.8: model.ResidualBlock/res_blocks.8.bn2: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_18: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JŒ
+pkg.torch.onnx.fx_node≥%_native_batch_norm_legit_no_training_18 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_18, %p_res_blocks_8_bn2_weight, %p_res_blocks_8_bn2_bias, %b_res_blocks_8_bn2_running_mean, %b_res_blocks_8_bn2_running_var, 0.1, 1e-05), kwargs = {})Jq
+pkg.torch.onnx.name_scopesS['', 'res_blocks.8', 'res_blocks.8.bn2', '_native_batch_norm_legit_no_training_18']J‘
+pkg.torch.onnx.stack_traceµFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 26, in forward
+    x = self.bn2(self.conv2(x))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Á
+
+getitem_54
+relu_16add_264node_add_264"AddJX
+	namespaceK: model.TogyzNet/res_blocks.8: model.ResidualBlock/add_264: aten.add.TensorJ^
+pkg.torch.onnx.class_hierarchy<['model.TogyzNet', 'model.ResidualBlock', 'aten.add.Tensor']Jë
+pkg.torch.onnx.fx_nodew%add_264 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%getitem_54, %relu_16), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.8', 'add_264']J¶
+pkg.torch.onnx.stack_traceáFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 27, in forward
+    x = x + residual
+”
+add_264relu_18node_relu_18"ReluJZ
+	namespaceM: model.TogyzNet/res_blocks.8: model.ResidualBlock/relu_18: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Já
+pkg.torch.onnx.fx_nodem%relu_18 : [num_users=2] = call_function[target=torch.ops.aten.relu.default](args = (%add_264,), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.8', 'relu_18']J£
+pkg.torch.onnx.stack_traceÑFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 28, in forward
+    x = F.relu(x)
+ò
+relu_18
+res_blocks.9.conv1.weight
+res_blocks.9.conv1.bias
+getitem_57node_Conv_121"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J‘
+	namespace∆: model.TogyzNet/res_blocks.9: model.ResidualBlock/res_blocks.9.bn1: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_19: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JŒ
+pkg.torch.onnx.fx_node≥%_native_batch_norm_legit_no_training_19 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_19, %p_res_blocks_9_bn1_weight, %p_res_blocks_9_bn1_bias, %b_res_blocks_9_bn1_running_mean, %b_res_blocks_9_bn1_running_var, 0.1, 1e-05), kwargs = {})Jq
+pkg.torch.onnx.name_scopesS['', 'res_blocks.9', 'res_blocks.9.bn1', '_native_batch_norm_legit_no_training_19']J‹
+pkg.torch.onnx.stack_traceΩFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Ô
+
+getitem_57relu_19node_relu_19"ReluJZ
+	namespaceM: model.TogyzNet/res_blocks.9: model.ResidualBlock/relu_19: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Jä
+pkg.torch.onnx.fx_nodep%relu_19 : [num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%getitem_57,), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.9', 'relu_19']Jπ
+pkg.torch.onnx.stack_traceöFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 25, in forward
+    x = F.relu(self.bn1(self.conv1(x)))
+ê
+relu_19
+res_blocks.9.conv2.weight
+res_blocks.9.conv2.bias
+getitem_60node_Conv_122"Conv*
+group†*
+pads@@†*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J‘
+	namespace∆: model.TogyzNet/res_blocks.9: model.ResidualBlock/res_blocks.9.bn2: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_20: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJ´
+pkg.torch.onnx.class_hierarchyà['model.TogyzNet', 'model.ResidualBlock', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JŒ
+pkg.torch.onnx.fx_node≥%_native_batch_norm_legit_no_training_20 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_20, %p_res_blocks_9_bn2_weight, %p_res_blocks_9_bn2_bias, %b_res_blocks_9_bn2_running_mean, %b_res_blocks_9_bn2_running_var, 0.1, 1e-05), kwargs = {})Jq
+pkg.torch.onnx.name_scopesS['', 'res_blocks.9', 'res_blocks.9.bn2', '_native_batch_norm_legit_no_training_20']J‘
+pkg.torch.onnx.stack_traceµFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 26, in forward
+    x = self.bn2(self.conv2(x))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+Á
+
+getitem_60
+relu_18add_293node_add_293"AddJX
+	namespaceK: model.TogyzNet/res_blocks.9: model.ResidualBlock/add_293: aten.add.TensorJ^
+pkg.torch.onnx.class_hierarchy<['model.TogyzNet', 'model.ResidualBlock', 'aten.add.Tensor']Jë
+pkg.torch.onnx.fx_nodew%add_293 : [num_users=1] = call_function[target=torch.ops.aten.add.Tensor](args = (%getitem_60, %relu_18), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.9', 'add_293']J¶
+pkg.torch.onnx.stack_traceáFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 27, in forward
+    x = x + residual
+”
+add_293relu_20node_relu_20"ReluJZ
+	namespaceM: model.TogyzNet/res_blocks.9: model.ResidualBlock/relu_20: aten.relu.defaultJ`
+pkg.torch.onnx.class_hierarchy>['model.TogyzNet', 'model.ResidualBlock', 'aten.relu.default']Já
+pkg.torch.onnx.fx_nodem%relu_20 : [num_users=2] = call_function[target=torch.ops.aten.relu.default](args = (%add_293,), kwargs = {})J=
+pkg.torch.onnx.name_scopes['', 'res_blocks.9', 'relu_20']J£
+pkg.torch.onnx.stack_traceÑFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 91, in forward
+    x = block(x)
+  File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 28, in forward
+    x = F.relu(x)
+§
+
+relu_20
+policy_conv.weight
+policy_conv.bias
+getitem_63node_Conv_123"Conv*
+group†*
+pads@ @ †*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J´
+	namespaceù: model.TogyzNet/policy_bn: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_21: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJì
+pkg.torch.onnx.class_hierarchyq['model.TogyzNet', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']J≤
+pkg.torch.onnx.fx_nodeó%_native_batch_norm_legit_no_training_21 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_21, %p_policy_bn_weight, %p_policy_bn_bias, %b_policy_bn_running_mean, %b_policy_bn_running_var, 0.1, 1e-05), kwargs = {})JZ
+pkg.torch.onnx.name_scopes<['', 'policy_bn', '_native_batch_norm_legit_no_training_21']JÍ
+pkg.torch.onnx.stack_traceÀFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 94, in forward
+    policy = F.relu(self.policy_bn(self.policy_conv(x)))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+¥
+
+getitem_63relu_21node_relu_21"ReluJ8
+	namespace+: model.TogyzNet/relu_21: aten.relu.defaultJI
+pkg.torch.onnx.class_hierarchy'['model.TogyzNet', 'aten.relu.default']Jä
+pkg.torch.onnx.fx_nodep%relu_21 : [num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%getitem_63,), kwargs = {})J-
+pkg.torch.onnx.name_scopes['', 'relu_21']J«
+pkg.torch.onnx.stack_trace®File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 94, in forward
+    policy = F.relu(self.policy_bn(self.policy_conv(x)))
+¿
+relu_21
+val_93view	node_view"Reshape*
+	allowzero†J5
+	namespace(: model.TogyzNet/view: aten.view.defaultJI
+pkg.torch.onnx.class_hierarchy'['model.TogyzNet', 'aten.view.default']Jé
+pkg.torch.onnx.fx_nodet%view : [num_users=1] = call_function[target=torch.ops.aten.view.default](args = (%relu_21, [-1, 288]), kwargs = {})J*
+pkg.torch.onnx.name_scopes['', 'view']J¡
+pkg.torch.onnx.stack_trace¢File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 95, in forward
+    policy = policy.view(-1, 32 * self.board_size)
+∞
+view
+policy_fc.weight
+policy_fc.biaslinearnode_linear"Gemm*
+beta  Ä?†*
+transB†*
+alpha  Ä?†*
+transA †Jc
+	namespaceV: model.TogyzNet/policy_fc: torch.nn.modules.linear.Linear/linear: aten.linear.defaultJm
+pkg.torch.onnx.class_hierarchyK['model.TogyzNet', 'torch.nn.modules.linear.Linear', 'aten.linear.default']J≠
+pkg.torch.onnx.fx_nodeí%linear : [num_users=1] = call_function[target=torch.ops.aten.linear.default](args = (%view, %p_policy_fc_weight, %p_policy_fc_bias), kwargs = {})J9
+pkg.torch.onnx.name_scopes['', 'policy_fc', 'linear']JÏ
+pkg.torch.onnx.stack_traceÕFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 96, in forward
+    policy = self.policy_fc(policy)
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/linear.py", line 134, in forward
+    return F.linear(input, self.weight, self.bias)
+ 
+linearpolicynode_log_softmax"
+LogSoftmax*
+axis†J?
+	namespace2: model.TogyzNet/log_softmax: aten.log_softmax.intJL
+pkg.torch.onnx.class_hierarchy*['model.TogyzNet', 'aten.log_softmax.int']Jè
+pkg.torch.onnx.fx_nodeu%log_softmax : [num_users=1] = call_function[target=torch.ops.aten.log_softmax.int](args = (%linear, 1), kwargs = {})J1
+pkg.torch.onnx.name_scopes['', 'log_softmax']J∏
+pkg.torch.onnx.stack_traceôFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 97, in forward
+    policy = F.log_softmax(policy, dim=1)
+ö
+
+relu_20
+value_conv.weight
+value_conv.bias
+getitem_66node_Conv_124"Conv*
+group†*
+pads@ @ †*
+auto_pad"NOTSET†*
+strides@†*
+	dilations@†J™
+	namespaceú: model.TogyzNet/value_bn: torch.nn.modules.batchnorm.BatchNorm1d/_native_batch_norm_legit_no_training_22: aten._native_batch_norm_legit_no_training.defaultJ:
+!pkg.onnxscript.rewriter.rule_nameFuseBatchNormIntoConvJì
+pkg.torch.onnx.class_hierarchyq['model.TogyzNet', 'torch.nn.modules.batchnorm.BatchNorm1d', 'aten._native_batch_norm_legit_no_training.default']JÆ
+pkg.torch.onnx.fx_nodeì%_native_batch_norm_legit_no_training_22 : [num_users=1] = call_function[target=torch.ops.aten._native_batch_norm_legit_no_training.default](args = (%conv1d_22, %p_value_bn_weight, %p_value_bn_bias, %b_value_bn_running_mean, %b_value_bn_running_var, 0.1, 1e-05), kwargs = {})JY
+pkg.torch.onnx.name_scopes;['', 'value_bn', '_native_batch_norm_legit_no_training_22']JË
+pkg.torch.onnx.stack_trace…File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 100, in forward
+    value = F.relu(self.value_bn(self.value_conv(x)))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/batchnorm.py", line 194, in forward
+    return F.batch_norm(
+≤
+
+getitem_66relu_22node_relu_22"ReluJ8
+	namespace+: model.TogyzNet/relu_22: aten.relu.defaultJI
+pkg.torch.onnx.class_hierarchy'['model.TogyzNet', 'aten.relu.default']Jä
+pkg.torch.onnx.fx_nodep%relu_22 : [num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%getitem_66,), kwargs = {})J-
+pkg.torch.onnx.name_scopes['', 'relu_22']J≈
+pkg.torch.onnx.stack_trace¶File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 100, in forward
+    value = F.relu(self.value_bn(self.value_conv(x)))
+»
+relu_22
+val_101view_1node_view_1"Reshape*
+	allowzero†J7
+	namespace*: model.TogyzNet/view_1: aten.view.defaultJI
+pkg.torch.onnx.class_hierarchy'['model.TogyzNet', 'aten.view.default']Jè
+pkg.torch.onnx.fx_nodeu%view_1 : [num_users=1] = call_function[target=torch.ops.aten.view.default](args = (%relu_22, [-1, 36]), kwargs = {})J,
+pkg.torch.onnx.name_scopes['', 'view_1']Jø
+pkg.torch.onnx.stack_trace†File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 101, in forward
+    value = value.view(-1, 4 * self.board_size)
+≈
+view_1
+value_fc1.weight
+value_fc1.biaslinear_1node_linear_1"Gemm*
+beta  Ä?†*
+transB†*
+alpha  Ä?†*
+transA †Je
+	namespaceX: model.TogyzNet/value_fc1: torch.nn.modules.linear.Linear/linear_1: aten.linear.defaultJm
+pkg.torch.onnx.class_hierarchyK['model.TogyzNet', 'torch.nn.modules.linear.Linear', 'aten.linear.default']J±
+pkg.torch.onnx.fx_nodeñ%linear_1 : [num_users=1] = call_function[target=torch.ops.aten.linear.default](args = (%view_1, %p_value_fc1_weight, %p_value_fc1_bias), kwargs = {})J;
+pkg.torch.onnx.name_scopes['', 'value_fc1', 'linear_1']JÛ
+pkg.torch.onnx.stack_trace‘File "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 102, in forward
+    value = F.relu(self.value_fc1(value))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/linear.py", line 134, in forward
+    return F.linear(input, self.weight, self.bias)
+¢
+linear_1relu_23node_relu_23"ReluJ8
+	namespace+: model.TogyzNet/relu_23: aten.relu.defaultJI
+pkg.torch.onnx.class_hierarchy'['model.TogyzNet', 'aten.relu.default']Jà
+pkg.torch.onnx.fx_noden%relu_23 : [num_users=1] = call_function[target=torch.ops.aten.relu.default](args = (%linear_1,), kwargs = {})J-
+pkg.torch.onnx.name_scopes['', 'relu_23']Jπ
+pkg.torch.onnx.stack_traceöFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 102, in forward
+    value = F.relu(self.value_fc1(value))
+À
+relu_23
+value_fc2.weight
+value_fc2.biaslinear_2node_linear_2"Gemm*
+beta  Ä?†*
+transB†*
+alpha  Ä?†*
+transA †Je
+	namespaceX: model.TogyzNet/value_fc2: torch.nn.modules.linear.Linear/linear_2: aten.linear.defaultJm
+pkg.torch.onnx.class_hierarchyK['model.TogyzNet', 'torch.nn.modules.linear.Linear', 'aten.linear.default']J≤
+pkg.torch.onnx.fx_nodeó%linear_2 : [num_users=1] = call_function[target=torch.ops.aten.linear.default](args = (%relu_23, %p_value_fc2_weight, %p_value_fc2_bias), kwargs = {})J;
+pkg.torch.onnx.name_scopes['', 'value_fc2', 'linear_2']J˜
+pkg.torch.onnx.stack_traceÿFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 103, in forward
+    value = torch.tanh(self.value_fc2(value))
+  File "/home/nurlykhan/miniconda3/envs/togyz-alphazero/lib/python3.11/site-packages/torch/nn/modules/linear.py", line 134, in forward
+    return F.linear(input, self.weight, self.bias)
+ò
+linear_2value	node_tanh"TanhJ5
+	namespace(: model.TogyzNet/tanh: aten.tanh.defaultJI
+pkg.torch.onnx.class_hierarchy'['model.TogyzNet', 'aten.tanh.default']JÖ
+pkg.torch.onnx.fx_nodek%tanh : [num_users=1] = call_function[target=torch.ops.aten.tanh.default](args = (%linear_2,), kwargs = {})J*
+pkg.torch.onnx.name_scopes['', 'tanh']JΩ
+pkg.torch.onnx.stack_traceûFile "/media/nurlykhan/B250187A5018480D/–ù–æ–≤–∞—è –ø–∞–ø–∫–∞/9Qumalaq/alphazero/model.py", line 103, in forward
+    value = torch.tanh(self.value_fc2(value))
+main_graph*QÄBconv_input.biasj
+locationmodel.onnx.dataj
+offset0j
+length512p*[ÄBres_blocks.0.conv1.biasj
+locationmodel.onnx.dataj
+offset512j
+length512p*\ÄBres_blocks.0.conv2.biasj
+locationmodel.onnx.dataj
+offset1024j
+length512p*\ÄBres_blocks.1.conv1.biasj
+locationmodel.onnx.dataj
+offset1536j
+length512p*\ÄBres_blocks.1.conv2.biasj
+locationmodel.onnx.dataj
+offset2048j
+length512p*\ÄBres_blocks.2.conv1.biasj
+locationmodel.onnx.dataj
+offset2560j
+length512p*\ÄBres_blocks.2.conv2.biasj
+locationmodel.onnx.dataj
+offset3072j
+length512p*\ÄBres_blocks.3.conv1.biasj
+locationmodel.onnx.dataj
+offset3584j
+length512p*\ÄBres_blocks.3.conv2.biasj
+locationmodel.onnx.dataj
+offset4096j
+length512p*\ÄBres_blocks.4.conv1.biasj
+locationmodel.onnx.dataj
+offset4608j
+length512p*\ÄBres_blocks.4.conv2.biasj
+locationmodel.onnx.dataj
+offset5120j
+length512p*\ÄBres_blocks.5.conv1.biasj
+locationmodel.onnx.dataj
+offset5632j
+length512p*\ÄBres_blocks.5.conv2.biasj
+locationmodel.onnx.dataj
+offset6144j
+length512p*\ÄBres_blocks.6.conv1.biasj
+locationmodel.onnx.dataj
+offset6656j
+length512p*\ÄBres_blocks.6.conv2.biasj
+locationmodel.onnx.dataj
+offset7168j
+length512p*\ÄBres_blocks.7.conv1.biasj
+locationmodel.onnx.dataj
+offset7680j
+length512p*\ÄBres_blocks.7.conv2.biasj
+locationmodel.onnx.dataj
+offset8192j
+length512p*\ÄBres_blocks.8.conv1.biasj
+locationmodel.onnx.dataj
+offset8704j
+length512p*\ÄBres_blocks.8.conv2.biasj
+locationmodel.onnx.dataj
+offset9216j
+length512p*\ÄBres_blocks.9.conv1.biasj
+locationmodel.onnx.dataj
+offset9728j
+length512p*]ÄBres_blocks.9.conv2.biasj
+locationmodel.onnx.dataj
+offset10240j
+length512p*ô Bpolicy_conv.biasJÄsFæc6ø·¢Søh∏ÇΩõqJø$©æPj¥æ ∫Sø&Pø">e·õæ≠‘æ`
+˚æ¸î®øÏr◊æÏ´æ˛«ŒæØ5ÊæØz	ø∏Y3ø*úçæƒŸæ Êæåxéºˇ´®øA Ææ™)7ø§â±æ»gGøÛ/˛æ‚Jø∏¿›æ*:	Bpolicy_fc.biasJ$ –º{MÈºbà<çÔ<qbËº˜®*Ωk;‡¶Ÿª€e°<*\ÄBvalue_conv.weightj
+locationmodel.onnx.dataj
+offset10752j
+length2048p*'Bvalue_conv.biasJB˜a>`˚ëæ–“>H–@?*ó@Bvalue_fc1.biasJÄZˆæXOÑæ`≥ægÂø¬Ω	ø
+õºæ€ëæÜxßΩ—Ùæ™{‹æïÚΩkQç>∫°Ω˚æ™æÿÇ/ømSRøÒrX;X”øﬂÃ…æy≠æq¨ æü:˚ΩœÏ‘æËR¨Ωa'øÁ]áæ∂_∑ΩÛò√ΩïÆæg√øÑ¬Øæxr)æ∞û¯æk»æ·zø%£¸æó–òæO·æù˛˚æGÁ=(/ø‘
+PæŸÚÕæGôëæãt‘ΩëVoæ‰Òº‘&ø“ñº˘õ‹=jÿ?øtE>+eæ«ø%∂Åæ≈X&ø¸±	øëDø!¬
+øN_>ƒ√æ	±Ëæu±ﬂæéèÒæ*õ@Bvalue_fc2.weightJÄxç&>(¸≠>˘]>∏Phæ#Ω8æ&≈æm∆m?w¬b>ÔL>%Ö“=˘Ä6>'ˆ3>∂T0æˆ=]æuøæ<}ú>)7f>±¸ñæl¸U>:(Ω≥>P˚QæÅ]=˘øâœ>∑¢>„ñX>ªBÄΩ‰7æDÕ>ä·«=)˜Ü>‚ÅÈ>Ó'pΩ≈¸{æ“ØæèΩ¢;/ ∏>èõéæ_0>úC>¡?h∫>ã™ôΩ˘Ùw>J™æñ„¢=Æ ø ¸Ω$ÍæÊN'?··=Væ¸Aë>q9æ⁄¬><$æÇ[=P.øÅÒJæÕsæﬁ<gø.=◊&\>*Bvalue_fc2.biasJÖ;*]ÄBconv_input.weightj
+locationmodel.onnx.dataj
+offset32384j
+length10752p*gÄÄBres_blocks.0.conv1.weightj
+locationmodel.onnx.dataj
+offset59520j
+length196608p*hÄÄBres_blocks.0.conv2.weightj
+locationmodel.onnx.dataj
+offset256128j
+length196608p*hÄÄBres_blocks.1.conv1.weightj
+locationmodel.onnx.dataj
+offset452736j
+length196608p*hÄÄBres_blocks.1.conv2.weightj
+locationmodel.onnx.dataj
+offset649344j
+length196608p*hÄÄBres_blocks.2.conv1.weightj
+locationmodel.onnx.dataj
+offset845952j
+length196608p*iÄÄBres_blocks.2.conv2.weightj
+locationmodel.onnx.dataj
+offset1042560j
+length196608p*iÄÄBres_blocks.3.conv1.weightj
+locationmodel.onnx.dataj
+offset1239168j
+length196608p*iÄÄBres_blocks.3.conv2.weightj
+locationmodel.onnx.dataj
+offset1435776j
+length196608p*iÄÄBres_blocks.4.conv1.weightj
+locationmodel.onnx.dataj
+offset1632384j
+length196608p*iÄÄBres_blocks.4.conv2.weightj
+locationmodel.onnx.dataj
+offset1828992j
+length196608p*iÄÄBres_blocks.5.conv1.weightj
+locationmodel.onnx.dataj
+offset2025600j
+length196608p*iÄÄBres_blocks.5.conv2.weightj
+locationmodel.onnx.dataj
+offset2222208j
+length196608p*iÄÄBres_blocks.6.conv1.weightj
+locationmodel.onnx.dataj
+offset2418816j
+length196608p*iÄÄBres_blocks.6.conv2.weightj
+locationmodel.onnx.dataj
+offset2615424j
+length196608p*iÄÄBres_blocks.7.conv1.weightj
+locationmodel.onnx.dataj
+offset2812032j
+length196608p*iÄÄBres_blocks.7.conv2.weightj
+locationmodel.onnx.dataj
+offset3008640j
+length196608p*iÄÄBres_blocks.8.conv1.weightj
+locationmodel.onnx.dataj
+offset3205248j
+length196608p*iÄÄBres_blocks.8.conv2.weightj
+locationmodel.onnx.dataj
+offset3401856j
+length196608p*iÄÄBres_blocks.9.conv1.weightj
+locationmodel.onnx.dataj
+offset3598464j
+length196608p*iÄÄBres_blocks.9.conv2.weightj
+locationmodel.onnx.dataj
+offset3795072j
+length196608p*^ ÄBpolicy_conv.weightj
+locationmodel.onnx.dataj
+offset43136j
+length16384p*Z	†Bpolicy_fc.weightj
+locationmodel.onnx.dataj
+offset22016j
+length10368p*X@$Bvalue_fc1.weightj
+locationmodel.onnx.dataj
+offset12800j
+length9216p*Bval_93Jˇˇˇˇˇˇˇˇ       *Bval_101Jˇˇˇˇˇˇˇˇ$       ZÀ
+state
+
+
+batch_size
+
+	"=
+/pkg.torch.export.graph_signature.InputSpec.kind
+USER_INPUT"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"&
+!pkg.torch.onnx.original_node_namexbï
+policy
+
+
+batch_size
+	"?
+0pkg.torch.export.graph_signature.OutputSpec.kindUSER_OUTPUT"0
+!pkg.torch.onnx.original_node_namelog_softmaxbç
+value
+
+
+batch_size
+"?
+0pkg.torch.export.graph_signature.OutputSpec.kindUSER_OUTPUT")
+!pkg.torch.onnx.original_node_nametanhj
+conv_input.bias
+	
+Äj&
+res_blocks.0.conv1.bias
+	
+Äj&
+res_blocks.0.conv2.bias
+	
+Äj&
+res_blocks.1.conv1.bias
+	
+Äj&
+res_blocks.1.conv2.bias
+	
+Äj&
+res_blocks.2.conv1.bias
+	
+Äj&
+res_blocks.2.conv2.bias
+	
+Äj&
+res_blocks.3.conv1.bias
+	
+Äj&
+res_blocks.3.conv2.bias
+	
+Äj&
+res_blocks.4.conv1.bias
+	
+Äj&
+res_blocks.4.conv2.bias
+	
+Äj&
+res_blocks.5.conv1.bias
+	
+Äj&
+res_blocks.5.conv2.bias
+	
+Äj&
+res_blocks.6.conv1.bias
+	
+Äj&
+res_blocks.6.conv2.bias
+	
+Äj&
+res_blocks.7.conv1.bias
+	
+Äj&
+res_blocks.7.conv2.bias
+	
+Äj&
+res_blocks.8.conv1.bias
+	
+Äj&
+res_blocks.8.conv2.bias
+	
+Äj&
+res_blocks.9.conv1.bias
+	
+Äj&
+res_blocks.9.conv2.bias
+	
+Äj
+policy_conv.bias
+
+
+ j–
+policy_fc.bias
+
+
+	"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"5
+!pkg.torch.onnx.original_node_namep_policy_fc_biasj(
+value_conv.weight
+
+
+Ä
+j
+value_conv.bias
+
+
+j–
+value_fc1.bias
+
+
+@"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"5
+!pkg.torch.onnx.original_node_namep_value_fc1_biasjÿ
+value_fc2.weight
+
+
+@"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"7
+!pkg.torch.onnx.original_node_namep_value_fc2_weightj–
+value_fc2.bias
+
+
+"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"5
+!pkg.torch.onnx.original_node_namep_value_fc2_biasj(
+conv_input.weight
+
+Ä
+
+j1
+res_blocks.0.conv1.weight
+
+Ä
+Ä
+j1
+res_blocks.0.conv2.weight
+
+Ä
+Ä
+j1
+res_blocks.1.conv1.weight
+
+Ä
+Ä
+j1
+res_blocks.1.conv2.weight
+
+Ä
+Ä
+j1
+res_blocks.2.conv1.weight
+
+Ä
+Ä
+j1
+res_blocks.2.conv2.weight
+
+Ä
+Ä
+j1
+res_blocks.3.conv1.weight
+
+Ä
+Ä
+j1
+res_blocks.3.conv2.weight
+
+Ä
+Ä
+j1
+res_blocks.4.conv1.weight
+
+Ä
+Ä
+j1
+res_blocks.4.conv2.weight
+
+Ä
+Ä
+j1
+res_blocks.5.conv1.weight
+
+Ä
+Ä
+j1
+res_blocks.5.conv2.weight
+
+Ä
+Ä
+j1
+res_blocks.6.conv1.weight
+
+Ä
+Ä
+j1
+res_blocks.6.conv2.weight
+
+Ä
+Ä
+j1
+res_blocks.7.conv1.weight
+
+Ä
+Ä
+j1
+res_blocks.7.conv2.weight
+
+Ä
+Ä
+j1
+res_blocks.8.conv1.weight
+
+Ä
+Ä
+j1
+res_blocks.8.conv2.weight
+
+Ä
+Ä
+j1
+res_blocks.9.conv1.weight
+
+Ä
+Ä
+j1
+res_blocks.9.conv2.weight
+
+Ä
+Ä
+j)
+policy_conv.weight
+
+ 
+Ä
+jŸ
+policy_fc.weight
+	
+	
+†"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"7
+!pkg.torch.onnx.original_node_namep_policy_fc_weightjÿ
+value_fc1.weight
+
+@
+$"<
+/pkg.torch.export.graph_signature.InputSpec.kind	PARAMETER"=
+5pkg.torch.export.graph_signature.InputSpec.persistentNone"7
+!pkg.torch.onnx.original_node_namep_value_fc1_weightjR
+val_93
+
+
+"<
+$pkg.onnxscript.optimizer.folded_from['val_91', 'val_92']jT
+val_101
+
+
+"=
+$pkg.onnxscript.optimizer.folded_from['val_100', 'val_99']j(
+getitem
+
+
+batch_size
+Ä
+	j%
+relu
+
+
+batch_size
+Ä
+	j*
+	getitem_3
+
+
+batch_size
+Ä
+	j'
+relu_1
+
+
+batch_size
+Ä
+	j*
+	getitem_6
+
+
+batch_size
+Ä
+	j'
+add_32
+
+
+batch_size
+Ä
+	j'
+relu_2
+
+
+batch_size
+Ä
+	j*
+	getitem_9
+
+
+batch_size
+Ä
+	j'
+relu_3
+
+
+batch_size
+Ä
+	j+
+
+getitem_12
+
+
+batch_size
+Ä
+	j'
+add_61
+
+
+batch_size
+Ä
+	j'
+relu_4
+
+
+batch_size
+Ä
+	j+
+
+getitem_15
+
+
+batch_size
+Ä
+	j'
+relu_5
+
+
+batch_size
+Ä
+	j+
+
+getitem_18
+
+
+batch_size
+Ä
+	j'
+add_90
+
+
+batch_size
+Ä
+	j'
+relu_6
+
+
+batch_size
+Ä
+	j+
+
+getitem_21
+
+
+batch_size
+Ä
+	j'
+relu_7
+
+
+batch_size
+Ä
+	j+
+
+getitem_24
+
+
+batch_size
+Ä
+	j(
+add_119
+
+
+batch_size
+Ä
+	j'
+relu_8
+
+
+batch_size
+Ä
+	j+
+
+getitem_27
+
+
+batch_size
+Ä
+	j'
+relu_9
+
+
+batch_size
+Ä
+	j+
+
+getitem_30
+
+
+batch_size
+Ä
+	j(
+add_148
+
+
+batch_size
+Ä
+	j(
+relu_10
+
+
+batch_size
+Ä
+	j+
+
+getitem_33
+
+
+batch_size
+Ä
+	j(
+relu_11
+
+
+batch_size
+Ä
+	j+
+
+getitem_36
+
+
+batch_size
+Ä
+	j(
+add_177
+
+
+batch_size
+Ä
+	j(
+relu_12
+
+
+batch_size
+Ä
+	j+
+
+getitem_39
+
+
+batch_size
+Ä
+	j(
+relu_13
+
+
+batch_size
+Ä
+	j+
+
+getitem_42
+
+
+batch_size
+Ä
+	j(
+add_206
+
+
+batch_size
+Ä
+	j(
+relu_14
+
+
+batch_size
+Ä
+	j+
+
+getitem_45
+
+
+batch_size
+Ä
+	j(
+relu_15
+
+
+batch_size
+Ä
+	j+
+
+getitem_48
+
+
+batch_size
+Ä
+	j(
+add_235
+
+
+batch_size
+Ä
+	j(
+relu_16
+
+
+batch_size
+Ä
+	j+
+
+getitem_51
+
+
+batch_size
+Ä
+	j(
+relu_17
+
+
+batch_size
+Ä
+	j+
+
+getitem_54
+
+
+batch_size
+Ä
+	j(
+add_264
+
+
+batch_size
+Ä
+	j(
+relu_18
+
+
+batch_size
+Ä
+	j+
+
+getitem_57
+
+
+batch_size
+Ä
+	j(
+relu_19
+
+
+batch_size
+Ä
+	j+
+
+getitem_60
+
+
+batch_size
+Ä
+	j(
+add_293
+
+
+batch_size
+Ä
+	j(
+relu_20
+
+
+batch_size
+Ä
+	j*
+
+getitem_63
+
+
+batch_size
+ 
+	j'
+relu_21
+
+
+batch_size
+ 
+	j!
+view
+
+
+batch_size
+†j"
+linear
+
+
+batch_size
+	j*
+
+getitem_66
+
+
+batch_size
+
+	j'
+relu_22
+
+
+batch_size
+
+	j"
+view_1
+
+
+batch_size
+$j$
+linear_1
+
+
+batch_size
+@j#
+relu_23
+
+
+batch_size
+@j$
+linear_2
+
+
+batch_size
+Ç‹h
+0pkg.torch.export.ExportedProgram.graph_signatureßh
+# inputs
+p_conv_input_weight: PARAMETER target='conv_input.weight'
+p_conv_input_bias: PARAMETER target='conv_input.bias'
+p_bn_input_weight: PARAMETER target='bn_input.weight'
+p_bn_input_bias: PARAMETER target='bn_input.bias'
+p_res_blocks_0_conv1_weight: PARAMETER target='res_blocks.0.conv1.weight'
+p_res_blocks_0_conv1_bias: PARAMETER target='res_blocks.0.conv1.bias'
+p_res_blocks_0_bn1_weight: PARAMETER target='res_blocks.0.bn1.weight'
+p_res_blocks_0_bn1_bias: PARAMETER target='res_blocks.0.bn1.bias'
+p_res_blocks_0_conv2_weight: PARAMETER target='res_blocks.0.conv2.weight'
+p_res_blocks_0_conv2_bias: PARAMETER target='res_blocks.0.conv2.bias'
+p_res_blocks_0_bn2_weight: PARAMETER target='res_blocks.0.bn2.weight'
+p_res_blocks_0_bn2_bias: PARAMETER target='res_blocks.0.bn2.bias'
+p_res_blocks_1_conv1_weight: PARAMETER target='res_blocks.1.conv1.weight'
+p_res_blocks_1_conv1_bias: PARAMETER target='res_blocks.1.conv1.bias'
+p_res_blocks_1_bn1_weight: PARAMETER target='res_blocks.1.bn1.weight'
+p_res_blocks_1_bn1_bias: PARAMETER target='res_blocks.1.bn1.bias'
+p_res_blocks_1_conv2_weight: PARAMETER target='res_blocks.1.conv2.weight'
+p_res_blocks_1_conv2_bias: PARAMETER target='res_blocks.1.conv2.bias'
+p_res_blocks_1_bn2_weight: PARAMETER target='res_blocks.1.bn2.weight'
+p_res_blocks_1_bn2_bias: PARAMETER target='res_blocks.1.bn2.bias'
+p_res_blocks_2_conv1_weight: PARAMETER target='res_blocks.2.conv1.weight'
+p_res_blocks_2_conv1_bias: PARAMETER target='res_blocks.2.conv1.bias'
+p_res_blocks_2_bn1_weight: PARAMETER target='res_blocks.2.bn1.weight'
+p_res_blocks_2_bn1_bias: PARAMETER target='res_blocks.2.bn1.bias'
+p_res_blocks_2_conv2_weight: PARAMETER target='res_blocks.2.conv2.weight'
+p_res_blocks_2_conv2_bias: PARAMETER target='res_blocks.2.conv2.bias'
+p_res_blocks_2_bn2_weight: PARAMETER target='res_blocks.2.bn2.weight'
+p_res_blocks_2_bn2_bias: PARAMETER target='res_blocks.2.bn2.bias'
+p_res_blocks_3_conv1_weight: PARAMETER target='res_blocks.3.conv1.weight'
+p_res_blocks_3_conv1_bias: PARAMETER target='res_blocks.3.conv1.bias'
+p_res_blocks_3_bn1_weight: PARAMETER target='res_blocks.3.bn1.weight'
+p_res_blocks_3_bn1_bias: PARAMETER target='res_blocks.3.bn1.bias'
+p_res_blocks_3_conv2_weight: PARAMETER target='res_blocks.3.conv2.weight'
+p_res_blocks_3_conv2_bias: PARAMETER target='res_blocks.3.conv2.bias'
+p_res_blocks_3_bn2_weight: PARAMETER target='res_blocks.3.bn2.weight'
+p_res_blocks_3_bn2_bias: PARAMETER target='res_blocks.3.bn2.bias'
+p_res_blocks_4_conv1_weight: PARAMETER target='res_blocks.4.conv1.weight'
+p_res_blocks_4_conv1_bias: PARAMETER target='res_blocks.4.conv1.bias'
+p_res_blocks_4_bn1_weight: PARAMETER target='res_blocks.4.bn1.weight'
+p_res_blocks_4_bn1_bias: PARAMETER target='res_blocks.4.bn1.bias'
+p_res_blocks_4_conv2_weight: PARAMETER target='res_blocks.4.conv2.weight'
+p_res_blocks_4_conv2_bias: PARAMETER target='res_blocks.4.conv2.bias'
+p_res_blocks_4_bn2_weight: PARAMETER target='res_blocks.4.bn2.weight'
+p_res_blocks_4_bn2_bias: PARAMETER target='res_blocks.4.bn2.bias'
+p_res_blocks_5_conv1_weight: PARAMETER target='res_blocks.5.conv1.weight'
+p_res_blocks_5_conv1_bias: PARAMETER target='res_blocks.5.conv1.bias'
+p_res_blocks_5_bn1_weight: PARAMETER target='res_blocks.5.bn1.weight'
+p_res_blocks_5_bn1_bias: PARAMETER target='res_blocks.5.bn1.bias'
+p_res_blocks_5_conv2_weight: PARAMETER target='res_blocks.5.conv2.weight'
+p_res_blocks_5_conv2_bias: PARAMETER target='res_blocks.5.conv2.bias'
+p_res_blocks_5_bn2_weight: PARAMETER target='res_blocks.5.bn2.weight'
+p_res_blocks_5_bn2_bias: PARAMETER target='res_blocks.5.bn2.bias'
+p_res_blocks_6_conv1_weight: PARAMETER target='res_blocks.6.conv1.weight'
+p_res_blocks_6_conv1_bias: PARAMETER target='res_blocks.6.conv1.bias'
+p_res_blocks_6_bn1_weight: PARAMETER target='res_blocks.6.bn1.weight'
+p_res_blocks_6_bn1_bias: PARAMETER target='res_blocks.6.bn1.bias'
+p_res_blocks_6_conv2_weight: PARAMETER target='res_blocks.6.conv2.weight'
+p_res_blocks_6_conv2_bias: PARAMETER target='res_blocks.6.conv2.bias'
+p_res_blocks_6_bn2_weight: PARAMETER target='res_blocks.6.bn2.weight'
+p_res_blocks_6_bn2_bias: PARAMETER target='res_blocks.6.bn2.bias'
+p_res_blocks_7_conv1_weight: PARAMETER target='res_blocks.7.conv1.weight'
+p_res_blocks_7_conv1_bias: PARAMETER target='res_blocks.7.conv1.bias'
+p_res_blocks_7_bn1_weight: PARAMETER target='res_blocks.7.bn1.weight'
+p_res_blocks_7_bn1_bias: PARAMETER target='res_blocks.7.bn1.bias'
+p_res_blocks_7_conv2_weight: PARAMETER target='res_blocks.7.conv2.weight'
+p_res_blocks_7_conv2_bias: PARAMETER target='res_blocks.7.conv2.bias'
+p_res_blocks_7_bn2_weight: PARAMETER target='res_blocks.7.bn2.weight'
+p_res_blocks_7_bn2_bias: PARAMETER target='res_blocks.7.bn2.bias'
+p_res_blocks_8_conv1_weight: PARAMETER target='res_blocks.8.conv1.weight'
+p_res_blocks_8_conv1_bias: PARAMETER target='res_blocks.8.conv1.bias'
+p_res_blocks_8_bn1_weight: PARAMETER target='res_blocks.8.bn1.weight'
+p_res_blocks_8_bn1_bias: PARAMETER target='res_blocks.8.bn1.bias'
+p_res_blocks_8_conv2_weight: PARAMETER target='res_blocks.8.conv2.weight'
+p_res_blocks_8_conv2_bias: PARAMETER target='res_blocks.8.conv2.bias'
+p_res_blocks_8_bn2_weight: PARAMETER target='res_blocks.8.bn2.weight'
+p_res_blocks_8_bn2_bias: PARAMETER target='res_blocks.8.bn2.bias'
+p_res_blocks_9_conv1_weight: PARAMETER target='res_blocks.9.conv1.weight'
+p_res_blocks_9_conv1_bias: PARAMETER target='res_blocks.9.conv1.bias'
+p_res_blocks_9_bn1_weight: PARAMETER target='res_blocks.9.bn1.weight'
+p_res_blocks_9_bn1_bias: PARAMETER target='res_blocks.9.bn1.bias'
+p_res_blocks_9_conv2_weight: PARAMETER target='res_blocks.9.conv2.weight'
+p_res_blocks_9_conv2_bias: PARAMETER target='res_blocks.9.conv2.bias'
+p_res_blocks_9_bn2_weight: PARAMETER target='res_blocks.9.bn2.weight'
+p_res_blocks_9_bn2_bias: PARAMETER target='res_blocks.9.bn2.bias'
+p_policy_conv_weight: PARAMETER target='policy_conv.weight'
+p_policy_conv_bias: PARAMETER target='policy_conv.bias'
+p_policy_bn_weight: PARAMETER target='policy_bn.weight'
+p_policy_bn_bias: PARAMETER target='policy_bn.bias'
+p_policy_fc_weight: PARAMETER target='policy_fc.weight'
+p_policy_fc_bias: PARAMETER target='policy_fc.bias'
+p_value_conv_weight: PARAMETER target='value_conv.weight'
+p_value_conv_bias: PARAMETER target='value_conv.bias'
+p_value_bn_weight: PARAMETER target='value_bn.weight'
+p_value_bn_bias: PARAMETER target='value_bn.bias'
+p_value_fc1_weight: PARAMETER target='value_fc1.weight'
+p_value_fc1_bias: PARAMETER target='value_fc1.bias'
+p_value_fc2_weight: PARAMETER target='value_fc2.weight'
+p_value_fc2_bias: PARAMETER target='value_fc2.bias'
+b_bn_input_running_mean: BUFFER target='bn_input.running_mean' persistent=True
+b_bn_input_running_var: BUFFER target='bn_input.running_var' persistent=True
+b_bn_input_num_batches_tracked: BUFFER target='bn_input.num_batches_tracked' persistent=True
+b_res_blocks_0_bn1_running_mean: BUFFER target='res_blocks.0.bn1.running_mean' persistent=True
+b_res_blocks_0_bn1_running_var: BUFFER target='res_blocks.0.bn1.running_var' persistent=True
+b_res_blocks_0_bn1_num_batches_tracked: BUFFER target='res_blocks.0.bn1.num_batches_tracked' persistent=True
+b_res_blocks_0_bn2_running_mean: BUFFER target='res_blocks.0.bn2.running_mean' persistent=True
+b_res_blocks_0_bn2_running_var: BUFFER target='res_blocks.0.bn2.running_var' persistent=True
+b_res_blocks_0_bn2_num_batches_tracked: BUFFER target='res_blocks.0.bn2.num_batches_tracked' persistent=True
+b_res_blocks_1_bn1_running_mean: BUFFER target='res_blocks.1.bn1.running_mean' persistent=True
+b_res_blocks_1_bn1_running_var: BUFFER target='res_blocks.1.bn1.running_var' persistent=True
+b_res_blocks_1_bn1_num_batches_tracked: BUFFER target='res_blocks.1.bn1.num_batches_tracked' persistent=True
+b_res_blocks_1_bn2_running_mean: BUFFER target='res_blocks.1.bn2.running_mean' persistent=True
+b_res_blocks_1_bn2_running_var: BUFFER target='res_blocks.1.bn2.running_var' persistent=True
+b_res_blocks_1_bn2_num_batches_tracked: BUFFER target='res_blocks.1.bn2.num_batches_tracked' persistent=True
+b_res_blocks_2_bn1_running_mean: BUFFER target='res_blocks.2.bn1.running_mean' persistent=True
+b_res_blocks_2_bn1_running_var: BUFFER target='res_blocks.2.bn1.running_var' persistent=True
+b_res_blocks_2_bn1_num_batches_tracked: BUFFER target='res_blocks.2.bn1.num_batches_tracked' persistent=True
+b_res_blocks_2_bn2_running_mean: BUFFER target='res_blocks.2.bn2.running_mean' persistent=True
+b_res_blocks_2_bn2_running_var: BUFFER target='res_blocks.2.bn2.running_var' persistent=True
+b_res_blocks_2_bn2_num_batches_tracked: BUFFER target='res_blocks.2.bn2.num_batches_tracked' persistent=True
+b_res_blocks_3_bn1_running_mean: BUFFER target='res_blocks.3.bn1.running_mean' persistent=True
+b_res_blocks_3_bn1_running_var: BUFFER target='res_blocks.3.bn1.running_var' persistent=True
+b_res_blocks_3_bn1_num_batches_tracked: BUFFER target='res_blocks.3.bn1.num_batches_tracked' persistent=True
+b_res_blocks_3_bn2_running_mean: BUFFER target='res_blocks.3.bn2.running_mean' persistent=True
+b_res_blocks_3_bn2_running_var: BUFFER target='res_blocks.3.bn2.running_var' persistent=True
+b_res_blocks_3_bn2_num_batches_tracked: BUFFER target='res_blocks.3.bn2.num_batches_tracked' persistent=True
+b_res_blocks_4_bn1_running_mean: BUFFER target='res_blocks.4.bn1.running_mean' persistent=True
+b_res_blocks_4_bn1_running_var: BUFFER target='res_blocks.4.bn1.running_var' persistent=True
+b_res_blocks_4_bn1_num_batches_tracked: BUFFER target='res_blocks.4.bn1.num_batches_tracked' persistent=True
+b_res_blocks_4_bn2_running_mean: BUFFER target='res_blocks.4.bn2.running_mean' persistent=True
+b_res_blocks_4_bn2_running_var: BUFFER target='res_blocks.4.bn2.running_var' persistent=True
+b_res_blocks_4_bn2_num_batches_tracked: BUFFER target='res_blocks.4.bn2.num_batches_tracked' persistent=True
+b_res_blocks_5_bn1_running_mean: BUFFER target='res_blocks.5.bn1.running_mean' persistent=True
+b_res_blocks_5_bn1_running_var: BUFFER target='res_blocks.5.bn1.running_var' persistent=True
+b_res_blocks_5_bn1_num_batches_tracked: BUFFER target='res_blocks.5.bn1.num_batches_tracked' persistent=True
+b_res_blocks_5_bn2_running_mean: BUFFER target='res_blocks.5.bn2.running_mean' persistent=True
+b_res_blocks_5_bn2_running_var: BUFFER target='res_blocks.5.bn2.running_var' persistent=True
+b_res_blocks_5_bn2_num_batches_tracked: BUFFER target='res_blocks.5.bn2.num_batches_tracked' persistent=True
+b_res_blocks_6_bn1_running_mean: BUFFER target='res_blocks.6.bn1.running_mean' persistent=True
+b_res_blocks_6_bn1_running_var: BUFFER target='res_blocks.6.bn1.running_var' persistent=True
+b_res_blocks_6_bn1_num_batches_tracked: BUFFER target='res_blocks.6.bn1.num_batches_tracked' persistent=True
+b_res_blocks_6_bn2_running_mean: BUFFER target='res_blocks.6.bn2.running_mean' persistent=True
+b_res_blocks_6_bn2_running_var: BUFFER target='res_blocks.6.bn2.running_var' persistent=True
+b_res_blocks_6_bn2_num_batches_tracked: BUFFER target='res_blocks.6.bn2.num_batches_tracked' persistent=True
+b_res_blocks_7_bn1_running_mean: BUFFER target='res_blocks.7.bn1.running_mean' persistent=True
+b_res_blocks_7_bn1_running_var: BUFFER target='res_blocks.7.bn1.running_var' persistent=True
+b_res_blocks_7_bn1_num_batches_tracked: BUFFER target='res_blocks.7.bn1.num_batches_tracked' persistent=True
+b_res_blocks_7_bn2_running_mean: BUFFER target='res_blocks.7.bn2.running_mean' persistent=True
+b_res_blocks_7_bn2_running_var: BUFFER target='res_blocks.7.bn2.running_var' persistent=True
+b_res_blocks_7_bn2_num_batches_tracked: BUFFER target='res_blocks.7.bn2.num_batches_tracked' persistent=True
+b_res_blocks_8_bn1_running_mean: BUFFER target='res_blocks.8.bn1.running_mean' persistent=True
+b_res_blocks_8_bn1_running_var: BUFFER target='res_blocks.8.bn1.running_var' persistent=True
+b_res_blocks_8_bn1_num_batches_tracked: BUFFER target='res_blocks.8.bn1.num_batches_tracked' persistent=True
+b_res_blocks_8_bn2_running_mean: BUFFER target='res_blocks.8.bn2.running_mean' persistent=True
+b_res_blocks_8_bn2_running_var: BUFFER target='res_blocks.8.bn2.running_var' persistent=True
+b_res_blocks_8_bn2_num_batches_tracked: BUFFER target='res_blocks.8.bn2.num_batches_tracked' persistent=True
+b_res_blocks_9_bn1_running_mean: BUFFER target='res_blocks.9.bn1.running_mean' persistent=True
+b_res_blocks_9_bn1_running_var: BUFFER target='res_blocks.9.bn1.running_var' persistent=True
+b_res_blocks_9_bn1_num_batches_tracked: BUFFER target='res_blocks.9.bn1.num_batches_tracked' persistent=True
+b_res_blocks_9_bn2_running_mean: BUFFER target='res_blocks.9.bn2.running_mean' persistent=True
+b_res_blocks_9_bn2_running_var: BUFFER target='res_blocks.9.bn2.running_var' persistent=True
+b_res_blocks_9_bn2_num_batches_tracked: BUFFER target='res_blocks.9.bn2.num_batches_tracked' persistent=True
+b_policy_bn_running_mean: BUFFER target='policy_bn.running_mean' persistent=True
+b_policy_bn_running_var: BUFFER target='policy_bn.running_var' persistent=True
+b_policy_bn_num_batches_tracked: BUFFER target='policy_bn.num_batches_tracked' persistent=True
+b_value_bn_running_mean: BUFFER target='value_bn.running_mean' persistent=True
+b_value_bn_running_var: BUFFER target='value_bn.running_var' persistent=True
+b_value_bn_num_batches_tracked: BUFFER target='value_bn.num_batches_tracked' persistent=True
+x: USER_INPUT
+
+# outputs
+log_softmax: USER_OUTPUT
+tanh: USER_OUTPUT
+ÇJ
+2pkg.torch.export.ExportedProgram.range_constraints{s77: VR[0, int_oo]}B
+ 
