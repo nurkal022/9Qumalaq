@@ -945,6 +945,9 @@ class TogyzQumalaq {
         this.lastMove = null;
         this.animationDelay = 60;
         
+        // Счёт серии игр
+        this.seriesScore = { white: 0, black: 0 };
+        
         this.ai = this.createAI(this.aiLevel);
         
         this.initUI();
@@ -1251,6 +1254,13 @@ class TogyzQumalaq {
         this.gameOver = true;
         const winner = this.checkWin();
         
+        // Обновляем счёт серии
+        if (winner === 'white') {
+            this.seriesScore.white++;
+        } else if (winner === 'black') {
+            this.seriesScore.black++;
+        }
+        
         // Log game end (async, but don't wait)
         gameLogger.endGame(winner, this.kazan).catch(e => {
             console.warn('[GameLogger] Error ending game:', e);
@@ -1267,6 +1277,8 @@ class TogyzQumalaq {
         }
         
         finalScore.textContent = `Есеп: Ақ ${this.kazan.white} - ${this.kazan.black} Қара`;
+        
+        this.updateSeriesScore();
         
         const modal = document.getElementById('winModal');
         modal.style.display = 'flex';
@@ -1414,6 +1426,19 @@ class TogyzQumalaq {
         document.getElementById('scoreBlack').textContent = this.kazan.black;
     }
     
+    updateSeriesScore() {
+        const seriesEl = document.getElementById('seriesScore');
+        if (seriesEl) {
+            const total = this.seriesScore.white + this.seriesScore.black;
+            if (total > 0) {
+                seriesEl.textContent = `Серия: Ақ ${this.seriesScore.white} - ${this.seriesScore.black} Қара`;
+                seriesEl.style.display = 'block';
+            } else {
+                seriesEl.style.display = 'none';
+            }
+        }
+    }
+    
     updateTuzdykIndicators() {
         const whiteIndicator = document.getElementById('tuzdykWhite');
         const blackIndicator = document.getElementById('tuzdykBlack');
@@ -1482,6 +1507,13 @@ class TogyzQumalaq {
         this.isAnimating = false;
         this.lastMove = null;
         
+        // В режиме бота: 50% вероятность что бот начинает первым
+        if (this.gameMode === 'bot' && Math.random() < 0.5) {
+            this.state.currentPlayer = 'black';
+        } else {
+            this.state.currentPlayer = 'white';
+        }
+        
         // Start logging new game
         gameLogger.startGame(this.gameMode, this.gameMode === 'bot' ? this.aiLevel : null);
         
@@ -1491,6 +1523,16 @@ class TogyzQumalaq {
         modal.style.display = 'none';
         
         this.renderBoard();
+        this.updateTurnIndicator();
+        this.updateClickablePits();
+        this.updateSeriesScore();
+        
+        // Если бот начинает первым, делаем его ход
+        if (this.gameMode === 'bot' && this.state.currentPlayer === 'black' && !this.gameOver) {
+            setTimeout(() => {
+                this.makeBotMove();
+            }, 500);
+        }
     }
     
     delay(ms) {

@@ -414,6 +414,15 @@ body {
     font-size: 1rem;
 }
 
+.series-score {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    opacity: 0.8;
+    font-weight: 400;
+}
+
 .board {
     background: 
         linear-gradient(180deg, 
